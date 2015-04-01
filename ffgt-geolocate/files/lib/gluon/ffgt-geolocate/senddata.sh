@@ -10,6 +10,10 @@ if [ $? -eq 1 ]; then
  mobile=0
 fi
 runnow=0
+isconfigured="`/sbin/uci get gluon-setup-mode.@setup_mode[0].configured 2>/dev/null`"
+if [ "$isconfigured" != "1" ]; then
+ isconfigured=0
+fi
 
 if [ ! -e /tmp/run/wifi-data-sent ]; then
  runnow=1
@@ -68,6 +72,15 @@ if [ ${runnow} -eq 1 ]; then
     fi
     /usr/bin/awk </tmp/geoloc.out '/^LAT:/ {printf("/sbin/uci set gluon-node-info.@location[0].latitude=%s\n", $2);} /^LON:/ {printf("/sbin/uci set gluon-node-info.@location[0].longitude=%s\n", $2);} /^ADR:/ {printf("/sbin/uci set gluon-node-info.@location[0].addr=%c%s%c\n", 39, $2, 39);} /^CTY:/ {printf("/sbin/uci set gluon-node-info.@location[0].city=%s\n", $2);} /^LOC:/ {printf("/sbin/uci set gluon-node-info.@location[0].locode=%s\n", $2);} END{printf("/sbin/uci commit gluon-node-info\n");}' >>/tmp/geoloc.sh
     /bin/sh /tmp/geoloc.sh
+    if [ $isconfigured -ne 1 ]; then
+     loc="`/sbin/uci get gluon-node-info.@location[0].locode 2>/dev/null`"
+     adr="`/sbin/uci get gluon-node-info.@location[0].addr 2>/dev/null`"
+     if [ "x${loc}" != "x" -a "x${adr}" != "x" ]; then
+      hostname="${loc}-${adr}"
+      /sbin/uci set system.@system[0].hostname="${hostname}"
+      /sbin/uci commit system
+     fi
+    fi
    fi
   fi
  fi
