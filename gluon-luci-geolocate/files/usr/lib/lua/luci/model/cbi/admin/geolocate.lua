@@ -26,7 +26,7 @@ Sofern eine Internetverbindung besteht, sollte in wenigen Sekunden eine Position
 ermittelt und diese abgespeichert werden. Falls dies der erste Aufruf des Setups ist,
 wird der Knotennamen basierend auf der Lokalisierung vorgeschlagen.]])
 
-os.execute("/lib/gluon/gluon-luci-geolocate/geolocate.sh")
+os.execute("((/lib/gluon/gluon-luci-geolocate/geolocate.sh)&)")
 
 hostname = uci:get_first("system", "system", "hostname")
 addr = uci:get_first("gluon-node-info", "location", "addr")
