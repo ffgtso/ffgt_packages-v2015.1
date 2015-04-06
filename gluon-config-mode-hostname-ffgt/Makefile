@@ -1,13 +1,13 @@
 include $(TOPDIR)/rules.mk
 
-PKG_NAME:=gluon-config-mode-hostname
+PKG_NAME:=gluon-config-mode-hostname-ffgt
 PKG_VERSION:=1
 
 PKG_BUILD_DIR := $(BUILD_DIR)/$(PKG_NAME)
 
 include $(GLUONDIR)/include/package.mk
 
-define Package/gluon-config-mode-hostname
+define Package/gluon-config-mode-hostname-ffgt
   SECTION:=gluon
   CATEGORY:=Gluon
   TITLE:=Set the hostname
@@ -24,8 +24,8 @@ endef
 define Build/Compile
 endef
 
-define Package/gluon-config-mode-hostname/install
+define Package/gluon-config-mode-hostname-ffgt/install
 	$(CP) ./files/* $(1)/
 endef
 
-$(eval $(call BuildPackage,gluon-config-mode-hostname))
+$(eval $(call BuildPackage,gluon-config-mode-hostname-ffgt))

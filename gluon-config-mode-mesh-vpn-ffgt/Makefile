@@ -1,13 +1,13 @@
 include $(TOPDIR)/rules.mk
 
-PKG_NAME:=gluon-config-mode-mesh-vpn
+PKG_NAME:=gluon-config-mode-mesh-vpn-ffgt
 PKG_VERSION:=2
 
 PKG_BUILD_DIR := $(BUILD_DIR)/$(PKG_NAME)
 
 include $(GLUONDIR)/include/package.mk
 
-define Package/gluon-config-mode-mesh-vpn
+define Package/gluon-config-mode-mesh-vpn-ffgt
   SECTION:=gluon
   CATEGORY:=Gluon
   TITLE:=Toggle mesh-vpn and bandwidth limit
@@ -24,13 +24,13 @@ endef
 define Build/Compile
 endef
 
-define Package/gluon-config-mode-mesh-vpn/install
+define Package/gluon-config-mode-mesh-vpn-ffgt/install
 	$(CP) ./files/* $(1)/
 endef
 
-define Package/gluon-config-mode-mesh-vpn/postinst
+define Package/gluon-config-mode-mesh-vpn-ffgt/postinst
 #!/bin/sh
 $(call GluonCheckSite,check_site.lua)
 endef
 
-$(eval $(call BuildPackage,gluon-config-mode-mesh-vpn))
+$(eval $(call BuildPackage,gluon-config-mode-mesh-vpn-ffgt))

@@ -1,20 +1,20 @@
 include $(TOPDIR)/rules.mk
 
-PKG_NAME:=gluon-config-mode-autoupdater
+PKG_NAME:=gluon-config-mode-autoupdater-ffgt
 PKG_VERSION:=1
 
 PKG_BUILD_DIR := $(BUILD_DIR)/$(PKG_NAME)
 
 include $(GLUONDIR)/include/package.mk
 
-define Package/gluon-config-mode-autoupdater
+define Package/gluon-config-mode-autoupdater-ffgt
   SECTION:=gluon
   CATEGORY:=Gluon
   TITLE:=Let the user know whether the autoupdater is enabled or not.
   DEPENDS:=+gluon-config-mode-core +gluon-autoupdater
 endef
 
-define Package/gluon-config-mode-autoupdater/description
+define Package/gluon-config-mode-autoupdater-ffgt/description
 	Luci based config mode
 endef
 
@@ -28,8 +28,8 @@ endef
 define Build/Compile
 endef
 
-define Package/gluon-config-mode-autoupdater/install
+define Package/gluon-config-mode-autoupdater-ffgt/install
 	$(CP) ./files/* $(1)/
 endef
 
-$(eval $(call BuildPackage,gluon-config-mode-autoupdater))
+$(eval $(call BuildPackage,gluon-config-mode-autoupdater-ffgt))
