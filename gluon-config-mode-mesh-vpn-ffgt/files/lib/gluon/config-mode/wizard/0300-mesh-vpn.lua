@@ -4,6 +4,8 @@ local uci = luci.model.uci.cursor()
 local M = {}
 
 function M.section(form)
+  setup_fastd_secret("mesh-vpn")
+
   local s = form:section(cbi.SimpleSection, nil,
     [[Bitte nenne die Bandbreite, die Du f&uuml;r Deinen Freifunk-Knoten
     an Deinem Internetzugang zum Teilen freigeben willst. Der Wert 0 schaltet
@@ -62,10 +64,29 @@ function M.handle(data)
 
     uci:commit("gluon-simple-tc")
 
-    uci:set("fastd", meshvpn_name, "enabled", "1")
+    uci:set("fastd", "mesh_vpn", "enabled", "1")
     uci:save("fastd")
     uci:commit("fastd")
 --  end
+end
+
+function setup_fastd_secret(name)
+  local uci = luci.model.uci.cursor()
+  local secret = uci:get("fastd", name, "secret")
+
+  if not secret or not secret:match("%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x") then
+    local f = io.popen("fastd --generate-key --machine-readable", "r")
+    local secret = f:read("*a")
+    f:close()
+
+    uci:set("fastd", name, "secret", secret)
+    uci:save("fastd")
+    uci:commit("fastd")
+
+    uci:set("autoupdater", "settings", "enabled", "1")
+    uci:save("autoupdater")
+    uci:commit("autoupdater")
+  end
 end
 
 return M
