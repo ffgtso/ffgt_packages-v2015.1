@@ -65,7 +65,7 @@ function M.handle(data)
     uci:set("fastd", meshvpn_name, "enabled", "1")
     uci:save("fastd")
     uci:commit("fastd")
-  end
+--  end
 end
 
 return M
