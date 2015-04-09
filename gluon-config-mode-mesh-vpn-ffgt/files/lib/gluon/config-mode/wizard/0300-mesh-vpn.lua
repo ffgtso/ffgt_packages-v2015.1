@@ -72,20 +72,27 @@ end
 
 function setup_fastd_secret(name)
   local uci = luci.model.uci.cursor()
-  local secret = uci:get("fastd", name, "secret")
+  local secret = uci:get("fastd", "mesh_vpn", "secret")
 
   if not secret or not secret:match("%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x%x") then
     local f = io.popen("fastd --generate-key --machine-readable", "r")
     local secret = f:read("*a")
     f:close()
 
-    uci:set("fastd", name, "secret", secret)
+    uci:set("fastd", "mesh_vpn", "secret", secret)
     uci:save("fastd")
     uci:commit("fastd")
 
     uci:set("autoupdater", "settings", "enabled", "1")
     uci:save("autoupdater")
     uci:commit("autoupdater")
+
+    local sname = uci:get_first("gluon-node-info", "location")
+    uci:set("gluon-node-info", sname, "share_location", "1")
+    uci:save("gluon-node-info")
+    uci:commit("gluon-node-info")
+
+
   end
 end
 
