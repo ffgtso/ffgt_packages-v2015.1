@@ -86,6 +86,14 @@ function setup_fastd_secret(name)
     uci:set("autoupdater", "settings", "enabled", "1")
     uci:save("autoupdater")
     uci:commit("autoupdater")
+
+    uci:set("fastd", "mesh_vpn", "enabled", "1")
+    uci:save("fastd")
+    uci:commit("fastd")
+
+    uci:set("gluon-simple-tc", "mesh_vpn", "interface")
+    uci:set("gluon-simple-tc", "mesh_vpn", "ifname", "mesh-vpn")
+    uci:set("gluon-simple-tc", meshvpn_name, "enabled", "0")
   end
 end
 
