@@ -18,8 +18,8 @@ local hostname, addr, locode, city
 local s
 local f = SimpleForm("geolocate", "Geo-Lokalisierung")
 f.template = "admin/expertmode"
-f.submit = "Speichern"
-f.reset = "Zurücksetzen"
+f.submit = "Weiter"
+-- f.reset = "Zurücksetzen"
 
 s = f:section(SimpleSection, nil, [[Dein Knoten versucht nun, sich zu lokalisieren.
 Sofern eine Internetverbindung besteht, sollte in wenigen Sekunden eine Position
@@ -28,12 +28,7 @@ wird der Knotennamen basierend auf der Lokalisierung vorgeschlagen.]])
 
 os.execute("((/lib/gluon/gluon-luci-geolocate/geolocate.sh)&)")
 
-hostname = uci:get_first("system", "system", "hostname")
-addr = uci:get_first("gluon-node-info", "location", "addr")
-city = uci:get_first("gluon-node-info", "location", "city")
-locode = uci:get_first("gluon-node-info", "location", "locode")
-
-s = f:section(SimpleSection, nil, [[Bitte zum Wizard zurückgehen.]])
+s = f:section(SimpleSection, nil, [[Bitte mit "Weiter" weitergehen.]])
 
 function f.handle(self, state, data)
   return true
