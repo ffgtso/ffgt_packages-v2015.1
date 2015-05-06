@@ -2,9 +2,9 @@
 # This script is supposed to be run every minute via cron.
 
 # Sent WiFi info once. If geolocation isn't set, or if is_mobile node, fetch location and fill in geoloc data.
-# If is_mobile, do this every 15 Minutes. Otherwise, it should be done once (until succeeded).
+# If is_mobile, do this every 5 Minutes. Otherwise, it should be done once (until succeeded).
 CURMIN=`/bin/date +%M`
-MODULO=`/usr/bin/expr ${CURMIN} % 15`
+MODULO=`/usr/bin/expr ${CURMIN} % 5`
 mobile="`/sbin/uci get gluon-node-info.@location[0].is_mobile 2>/dev/null`"
 if [ $? -eq 1 ]; then
  mobile=0
@@ -59,7 +59,7 @@ if [ ${runnow} -eq 1 ]; then
    sleep 10
    /usr/bin/wget -q -O /tmp/geoloc.out "http://setup.${IPVXPREFIX}guetersloh.freifunk.net/geoloc.php?list=me&node=$mac"
    if [ -e /tmp/geoloc.out ]; then
-    # Actually, we might want to sanity check the reply, as it could be empty or worse ... (FIXME) 
+    # Actually, we might want to sanity check the reply, as it could be empty or worse ... (FIXME)
     /bin/cat /dev/null >/tmp/geoloc.sh
     haslocation="`/sbin/uci get gluon-node-info.@location[0] 2>/dev/null]`"
     if [ "${haslocation}" != "location" ]; then
@@ -70,15 +70,19 @@ if [ ${runnow} -eq 1 ]; then
     if [ "${hasshare}" != "0" ]; then
      echo "/sbin/uci set gluon-node-info.@location[0].share_location=1" >>/tmp/geoloc.sh
     fi
-    /usr/bin/awk </tmp/geoloc.out '/^LAT:/ {printf("/sbin/uci set gluon-node-info.@location[0].latitude=%s\n", $2);} /^LON:/ {printf("/sbin/uci set gluon-node-info.@location[0].longitude=%s\n", $2);} /^ADR:/ {printf("/sbin/uci set gluon-node-info.@location[0].addr=%c%s%c\n", 39, $2, 39);} /^CTY:/ {printf("/sbin/uci set gluon-node-info.@location[0].city=%s\n", $2);} /^LOC:/ {printf("/sbin/uci set gluon-node-info.@location[0].locode=%s\n", $2);} END{printf("/sbin/uci commit gluon-node-info\n");}' >>/tmp/geoloc.sh
-    /bin/sh /tmp/geoloc.sh
-    if [ $isconfigured -ne 1 ]; then
-     loc="`/sbin/uci get gluon-node-info.@location[0].locode 2>/dev/null`"
-     adr="`/sbin/uci get gluon-node-info.@location[0].addr 2>/dev/null`"
-     if [ "x${loc}" != "x" -a "x${adr}" != "x" ]; then
-      hostname="${loc}-${adr}"
-      /sbin/uci set system.@system[0].hostname="${hostname}"
-      /sbin/uci commit system
+    grep "LAT: 0" </tmp/geoloc.out >/dev/null 2>&1
+    if [ $? -ne 0 ]; then
+     /usr/bin/awk </tmp/geoloc.out '/^LAT:/ {printf("/sbin/uci set gluon-node-info.@location[0].latitude=%s\n", $2);} /^LON:/ {printf("/sbin/uci set gluon-node-info.@location[0].longitude=%s\n", $2);} /^ADR:/ {printf("/sbin/uci set gluon-node-info.@location[0].addr=%c%s%c\n", 39, $2, 39);} /^CTY:/ {printf("/sbin/uci set gluon-node-info.@location[0].city=%s\n", $2);} /^LOC:/ {printf("/sbin/uci set gluon-node-info.@location[0].locode=%s\n", $2); /^ZIP:/ {printf("/sbin/uci set gluon-node-info.@location[0].zip=%s\n", $2);} END{printf("/sbin/uci commit gluon-node-info\n");}' >>/tmp/geoloc.sh
+     /bin/sh /tmp/geoloc.sh
+     if [ $isconfigured -ne 1 ]; then
+      loc="`/sbin/uci get gluon-node-info.@location[0].locode 2>/dev/null`"
+      adr="`/sbin/uci get gluon-node-info.@location[0].addr 2>/dev/null`"
+      zip="`/sbin/uci get gluon-node-info.@location[0].zip 2>/dev/null`"
+      if [ "x${loc}" != "x" -a "x${adr}" != "x" ]; then
+       hostname="${zip}-${adr}"
+       /sbin/uci set system.@system[0].hostname="${hostname}"
+       /sbin/uci commit system
+      fi
      fi
     fi
    fi
