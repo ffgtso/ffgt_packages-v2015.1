@@ -93,7 +93,7 @@ function setup_fastd_secret(name)
 
     uci:set("gluon-simple-tc", "mesh_vpn", "interface")
     uci:set("gluon-simple-tc", "mesh_vpn", "ifname", "mesh-vpn")
-    uci:set("gluon-simple-tc", meshvpn_name, "enabled", "0")
+    uci:set("gluon-simple-tc", "mesh_vpn", "enabled", "0")
 
     local sname = uci:get_first("gluon-node-info", "location")
     uci:set("gluon-node-info", sname, "share_location", "1")
