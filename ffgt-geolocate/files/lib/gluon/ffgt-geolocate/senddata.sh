@@ -56,11 +56,10 @@ if [ ${runnow} -eq 1 ]; then
   curlat="`/sbin/uci get gluon-node-info.@location[0].longitude 2>/dev/null`"
   mobile="`/sbin/uci get gluon-node-info.@location[0].is_mobile 2>/dev/null`"
   if [ "X${curlat}" = "X" -o "X${mobile}" = "X1" ]; then
-   sleep 10
+   sleep 2
    /usr/bin/wget -q -O /tmp/geoloc.out "http://setup.${IPVXPREFIX}guetersloh.freifunk.net/geoloc.php?list=me&node=$mac"
    if [ -e /tmp/geoloc.out ]; then
     # Actually, we might want to sanity check the reply, as it could be empty or worse ... (FIXME)
-    /bin/cat /dev/null >/tmp/geoloc.sh
     haslocation="`/sbin/uci get gluon-node-info.@location[0] 2>/dev/null]`"
     if [ "${haslocation}" != "location" ]; then
      echo "/sbin/uci add gluon-node-info location" >>/tmp/geoloc.sh
@@ -72,14 +71,18 @@ if [ ${runnow} -eq 1 ]; then
     fi
     grep "LAT: 0" </tmp/geoloc.out >/dev/null 2>&1
     if [ $? -ne 0 ]; then
-     /usr/bin/awk </tmp/geoloc.out '/^LAT:/ {printf("/sbin/uci set gluon-node-info.@location[0].latitude=%s\n", $2);} /^LON:/ {printf("/sbin/uci set gluon-node-info.@location[0].longitude=%s\n", $2);} /^ADR:/ {printf("/sbin/uci set gluon-node-info.@location[0].addr=%c%s%c\n", 39, $2, 39);} /^CTY:/ {printf("/sbin/uci set gluon-node-info.@location[0].city=%s\n", $2);} /^LOC:/ {printf("/sbin/uci set gluon-node-info.@location[0].locode=%s\n", $2); /^ZIP:/ {printf("/sbin/uci set gluon-node-info.@location[0].zip=%s\n", $2);} END{printf("/sbin/uci commit gluon-node-info\n");}' >>/tmp/geoloc.sh
+     /bin/cat /dev/null >/tmp/geoloc.sh
+     /usr/bin/awk </tmp/geoloc.out '/^LAT:/ {printf("/sbin/uci set gluon-node-info.@location[0].latitude=%s\n", $2);} /^LON:/ {printf("/sbin/uci set gluon-node-info.@location[0].longitude=%s\n", $2);}' >>/tmp/geoloc.sh
+     /usr/bin/awk </tmp/geoloc.out '/^ADR:/ {printf("/sbin/uci set gluon-node-info.@location[0].addr=%c%s%c\n", 39, $2, 39);} /^CTY:/ {printf("/sbin/uci set gluon-node-info.@location[0].city=%s\n", $2);}' >>/tmp/geoloc.sh
+     /usr/bin/awk </tmp/geoloc.out '/^LOC:/ {printf("/sbin/uci set gluon-node-info.@location[0].locode=%s\n", $2)}; /^ZIP:/ {printf("/sbin/uci set gluon-node-info.@location[0].zip=%s\n", $2);} END{printf("/sbin/uci commit gluon-node-info\n");}' >>/tmp/geoloc.sh
      /bin/sh /tmp/geoloc.sh
      if [ $isconfigured -ne 1 ]; then
       loc="`/sbin/uci get gluon-node-info.@location[0].locode 2>/dev/null`"
       adr="`/sbin/uci get gluon-node-info.@location[0].addr 2>/dev/null`"
       zip="`/sbin/uci get gluon-node-info.@location[0].zip 2>/dev/null`"
-      if [ "x${loc}" != "x" -a "x${adr}" != "x" ]; then
-       hostname="${zip}-${adr}"
+      if [ "x${zip}" != "x" -a "x${adr}" != "x" ]; then
+       suffix=`echo "util=require 'gluon.util' print(string.format('%s', util.node_id()))" | /usr/bin/lua | awk '{print substr($1, 8);}'`
+       hostname="${zip}-${adr}-${suffix}"
        /sbin/uci set system.@system[0].hostname="${hostname}"
        /sbin/uci commit system
       fi

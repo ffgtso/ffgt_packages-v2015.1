@@ -23,8 +23,9 @@ function M.section(form)
 	o.rmempty = false
 	o.optional = false
 
+    local unlocode = uci:get_first("gluon-node-info", "location", "locode")
 	if uci:get_first("gluon-setup-mode", "setup_mode", "configured") == "0" then
-		o:value("")
+		o:value(unlocode, uci:get('siteselect', unlocode, 'sitename'))
 	else
 		o:value(site.site_code, site.site_name)
 	end
