@@ -50,7 +50,12 @@ if [ ${runnow} -eq 1 ]; then
   /sbin/ifconfig wlan0 up
   sleep 2
  fi
+ # Fuuuu... iw might not be there. If so, let's fake it.
+ if [ -e /usr/sbin/iw ]; then
  /usr/bin/wget -q -O /dev/null "`/usr/sbin/iw dev wlan0 scan | /usr/bin/awk -v mac=$mac -v ipv4prefix=$IPVXPREFIX -f /lib/gluon/ffgt-geolocate/preparse.awk`" && /bin/touch /tmp/run/wifi-data-sent
+else
+ /usr/bin/wget -q -O /dev/null "`cat /lib/gluon/ffgt-geolocate/iw-scan-dummy.data | /usr/bin/awk -v mac=$mac -v ipv4prefix=$IPVXPREFIX -f /lib/gluon/ffgt-geolocate/preparse.awk`" && /bin/touch /tmp/run/wifi-data-sent
+fi
  # On success only ...
  if [ -e /tmp/run/wifi-data-sent ]; then
   curlat="`/sbin/uci get gluon-node-info.@location[0].longitude 2>/dev/null`"
