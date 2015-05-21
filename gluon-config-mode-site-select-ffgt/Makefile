@@ -12,6 +12,7 @@ define Package/gluon-config-mode-site-select-ffgt
   SECTION:=gluon
   CATEGORY:=Gluon
   TITLE:=UI for changing the node-config
+  DEPENDS:=+ffgt-geolocate
 endef
 
 define Build/Prepare
