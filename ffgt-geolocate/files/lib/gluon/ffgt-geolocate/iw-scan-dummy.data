@@ -1,0 +1,29 @@
+BSS 0a:0b:0c:a0:b0:c0(on wlan0)
+        TSF: 132426682169 usec (1d, 12:47:06)
+        freq: 2437
+        beacon interval: 100 TUs
+        capability: ESS Privacy ShortPreamble ShortSlotTime (0x0431)
+        signal: -75.00 dBm
+        last seen: 2440 ms ago
+        Information elements from Probe Response frame:
+        SSID: FRITZ!Box WLAN 3170
+        Supported rates: 1.0* 2.0* 5.5* 11.0* 6.0 9.0 12.0 18.0 
+        DS Parameter set: channel 6
+        Country: DE     Environment: Indoor/Outdoor
+                Channels [1 - 13] @ 20 dBm
+        ERP: Barker_Preamble_Mode
+        RSN:     * Version: 1
+                 * Group cipher: TKIP
+                 * Pairwise ciphers: CCMP
+                 * Authentication suites: PSK
+                 * Capabilities: 1-PTKSA-RC 1-GTKSA-RC (0x0000)
+        Extended supported rates: 24.0 36.0 48.0 54.0 
+        WPA:     * Version: 1
+                 * Group cipher: TKIP
+                 * Pairwise ciphers: TKIP
+                 * Authentication suites: PSK
+        WMM:     * Parameter version 1
+                 * BE: CW 15-1023, AIFSN 3
+                 * BK: CW 15-1023, AIFSN 7
+                 * VI: CW 7-15, AIFSN 2, TXOP 3008 usec
+                 * VO: CW 3-7, AIFSN 2, TXOP 1504 usec
