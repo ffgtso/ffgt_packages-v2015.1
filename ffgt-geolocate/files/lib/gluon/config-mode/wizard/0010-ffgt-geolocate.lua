@@ -59,7 +59,9 @@ function M.section(form)
         local addr = uci:get_first("gluon-node-info", 'location', "addr")
         local city = uci:get_first("gluon-node-info", 'location', "city")
         local zip = uci:get_first("gluon-node-info", 'location', "zip")
-        local mystr = string.format("Lokalisierung des Knotens erfolgreich; bitte Koordinaten &uuml;berpr&uuml;fen:<br>Adresse: %s, %s %s<br>Koordinaten: %f %f", addr, zip, city, lat, lon)
+        local unlocode = uci:get_first("gluon-node-info", "location", "locode")
+	    local community= uci:get('siteselect', unlocode, 'sitename')
+        local mystr = string.format("Lokalisierung des Knotens erfolgreich; bitte Daten &uuml;berpr&uuml;fen:<br></br><b>Adresse:</b> %s, %s %s<br></br><b>Koordinaten:</b> %f %f<br></br><b>Community:</b> %s", addr, zip, city, lat, lon, community)
         local s = form:section(cbi.SimpleSection, nil, mystr)
     end
 end
