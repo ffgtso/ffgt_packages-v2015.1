@@ -46,8 +46,7 @@ function M.section(form)
         local s = form:section(cbi.SimpleSection, nil, [[Geo-Lokalisierung erfolgreich.]])
         local unlocode = uci:get_first("gluon-node-info", "location", "locode")
         local o = s:option(cbi.DummyValue, "community", "Community")
-	    o.value = unlocode
-	    end
+        o.value = unlocode
     end
 end
 
