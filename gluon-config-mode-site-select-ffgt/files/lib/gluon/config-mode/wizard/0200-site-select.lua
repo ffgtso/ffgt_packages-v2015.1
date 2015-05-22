@@ -15,7 +15,7 @@ function M.section(form)
 	    local s = form:section(cbi.SimpleSection, nil, [[
 	    Geo-Lokalisierung schlug fehl :( Hier hast Du die Möglichkeit,
 	    die Community, mit der sich Dein Knoten verbindet, auszuwählen.
-	    Bitte denke daran, dass dein Router sich dann nur mit dem Netz
+	    Bitte denke daran, dass Dein Router sich dann nur mit dem Netz
 	    der ausgewählten Community verbindet und ggf. lokales Meshing nicht
 	    funktioniert bei falscher Auswahl. Vorzugsweise schließt Du
 	    Deinen Freifunk-Knoten jetzt per gelbem Port an Deinen Internet-
@@ -42,6 +42,12 @@ function M.section(form)
 	    for index, site in ipairs(sites) do
 	    	o:value(site, uci:get('siteselect', site, 'sitename'))
         end
+    else
+        local s = form:section(cbi.SimpleSection, nil, [[Geo-Lokalisierung erfolgreich.]])
+        local unlocode = uci:get_first("gluon-node-info", "location", "locode")
+        local o = s:option(cbi.DummyValue, "community", "Community")
+	    o.value = unlocode
+	    end
     end
 end
 
