@@ -107,7 +107,6 @@ function M.handle(data)
             uci:commit('fastd')
         end
 
-
         -- We need to store the selection somewhere. To make this simple,
         -- put it into gluon-node-info:location.siteselect ...
         uci:delete('gluon-node-info', 'location', 'siteselect')
