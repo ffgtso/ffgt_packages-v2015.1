@@ -7,8 +7,8 @@ local sites = {}
 local M = {}
 
 function M.section(form)
-    local lat = uci:get("gluon-node-info", 'location', "latitude")
-    local lon = uci:get("gluon-node-info", 'location', "longitude")
+    local lat = uci:get_first("gluon-node-info", 'location', "latitude")
+    local lon = uci:get_first("gluon-node-info", 'location', "longitude")
     if not lat then lat=0 end
     if not lon then lon=0 end
     if ((lat == 0) or (lat == 51)) and ((lon == 0) or (lon == 9)) then
@@ -43,7 +43,6 @@ function M.section(form)
 	    	o:value(site, uci:get('siteselect', site, 'sitename'))
         end
     end
-
 end
 
 function M.handle(data)
