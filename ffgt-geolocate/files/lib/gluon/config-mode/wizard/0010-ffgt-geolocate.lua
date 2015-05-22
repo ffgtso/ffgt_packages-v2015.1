@@ -44,3 +44,25 @@ if not lat or not lon then
     os.execute('sleep 20')
 end
 
+local M = {}
+
+function M.section(form)
+    local lat = uci:get_first("gluon-node-info", 'location', "latitude")
+    local lon = uci:get_first("gluon-node-info", 'location', "longitude")
+    if not lat then lat=0 end
+    if not lon then lon=0 end
+    if ((lat == 0) or (lat == 51)) and ((lon == 0) or (lon == 9)) then
+        local s = form:section(cbi.SimpleSection, nil,
+        [[Es wurde versucht, den Knoten automatisch zu lokalisieren. Dies schlug leider fehl.
+        Ist der Knoten über die gelben(!) Ports mit dem Internet-Router verbunden?]])
+    else
+        local s = form:section(cbi.SimpleSection, nil,
+        [[Lokalisierung des Knotens erfolgreich; bitte Koordinaten &uuml;berpr&uuml;fen.]])
+    end
+end
+
+function M.handle(data)
+  return
+end
+
+return M
