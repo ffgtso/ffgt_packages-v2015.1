@@ -31,7 +31,7 @@ function M.section(form)
 
   local mylat = uci:get_first("gluon-node-info", "location", "latitude")
   local mylon = uci:get_first("gluon-node-info", "location", "longitude")
-  local mystr = string.format("Hier sollte unsere Karte zu sehen sein, sofern Dein Computer Internet-Zugang hat. Einfach die Karte auf Deinen Standort ziehen, den Button zur Koordinatenanzeige klicken und dann die Daten in die Felder oben kopieren:<p><iframe src=\"http://stats.guetersloh.freifunk.net/map/geomap.html?lat=%f&amp;lon=%f\" width=\"100%\" height=\"700\">Unsere Knotenkarte</iframe></p>", mylat, mylon)
+  local mystr = string.format("Hier sollte unsere Karte zu sehen sein, sofern Dein Computer Internet-Zugang hat. Einfach die Karte auf Deinen Standort ziehen, den Button zur Koordinatenanzeige klicken und dann die Daten in die Felder oben kopieren:<p><iframe src=\"http://stats.guetersloh.freifunk.net/map/geomap.html?lat=%f&amp;lon=%f\" width=\"100%%\" height=\"700\">Unsere Knotenkarte</iframe></p>", mylat, mylon)
 
   local s = form:section(cbi.SimpleSection, nil, mystr)
 end
