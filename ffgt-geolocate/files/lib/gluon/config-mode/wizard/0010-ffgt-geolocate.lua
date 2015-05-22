@@ -37,8 +37,8 @@ end
 
 -- If there's no location set, try to get something via callback, as we need this for
 -- selecting the proper settings.
-local lat = uci:get("gluon-node-info", 'location', "latitude")
-local lon = uci:get("gluon-node-info", 'location', "longitude")
+local lat = uci:get_first("gluon-node-info", 'location', "latitude")
+local lon = uci:get_first("gluon-node-info", 'location', "longitude")
 if not lat or not lon then
     os.execute('sh "/lib/gluon/ffgt-geolocate/senddata.sh"')
     os.execute('sleep 20')
