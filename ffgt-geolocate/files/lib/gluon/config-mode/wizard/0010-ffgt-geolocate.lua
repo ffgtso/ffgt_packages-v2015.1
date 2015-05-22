@@ -56,8 +56,11 @@ function M.section(form)
         [[Es wurde versucht, den Knoten automatisch zu lokalisieren. Dies schlug leider fehl.
         Ist der Knoten über die gelben(!) Ports mit dem Internet-Router verbunden?]])
     else
-        local s = form:section(cbi.SimpleSection, nil,
-        [[Lokalisierung des Knotens erfolgreich; bitte Koordinaten &uuml;berpr&uuml;fen.]])
+        local addr = uci:get_first("gluon-node-info", 'location', "addr")
+        local city = uci:get_first("gluon-node-info", 'location', "city")
+        local zip = uci:get_first("gluon-node-info", 'location', "zip")
+        local mystr = string.format("Lokalisierung des Knotens erfolgreich; bitte Koordinaten &uuml;berpr&uuml;fen:<br>Adresse: %s, %s %s<br>Koordinaten: %f %f", addr, zip, city, lat, lon)
+        local s = form:section(cbi.SimpleSection, nil, mystr)
     end
 end
 
