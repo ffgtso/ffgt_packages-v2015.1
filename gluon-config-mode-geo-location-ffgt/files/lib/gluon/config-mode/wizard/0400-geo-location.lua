@@ -4,6 +4,8 @@ local uci = luci.model.uci.cursor()
 local M = {}
 
 function M.section(form)
+  local lat = uci:get_first("gluon-node-info", "location", "latitude")
+  local lon = uci:get_first("gluon-node-info", "location", "longitude")
   local addr = uci:get_first("gluon-node-info", 'location', "addr")
   local city = uci:get_first("gluon-node-info", 'location', "city")
   local zip = uci:get_first("gluon-node-info", 'location', "zip")
@@ -18,6 +20,16 @@ function M.section(form)
     geben w&uuml;rdest.]])
 
   local o
+  -- FXIME! This is the totally wrong place, but in geoloc/0200-geo-location.lua
+  -- lua/luci fail due to what seems to be a caching issue. I hate to need to work around
+  -- stupidity :(
+  local uci = luci.model.uci.cursor()
+  local lat = uci:get_first("gluon-node-info", sname, "latitude")
+  local lon = uci:get_first("gluon-node-info", sname, "longitude")
+  local locode = uci:get_first("gluon-node-info", sname, "locode")
+  if not locode or (lat == "51" and lon == "9") then
+    luci.http.redirect(luci.dispatcher.build_url("gluon-config-mode/wizard-pre"))
+  end
 
   o = s:option(cbi.Flag, "_location", "Knoten auf der Karte anzeigen")
   o.default = uci:get_first("gluon-node-info", "location", "share_location", o.disabled)
