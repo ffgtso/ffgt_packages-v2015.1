@@ -8,16 +8,23 @@ function M.section(form)
     local lon = uci:get_first("gluon-node-info", 'location', "longitude")
     if not lat then lat=0 end
     if not lon then lon=0 end
-    if ((lat == 0) or (lat == 51)) and ((lon == 0) or (lon == 9)) then
+    if (lat == 0) and (lon == 0) then
         local s = form:section(cbi.SimpleSection, nil,
-        [[Es wurde versucht, den Knoten automatisch zu lokalisieren. Dies schlug leider fehl.
-        Ist der Knoten über die gelben(!) Ports mit dem Internet-Router verbunden?]])
+        [[Es sind keine Koordinaten hinterlegt. Bitte trage sie ein oder versuche die
+        automatische Lokalisierung (anhand der empfangenen Funknetze bzw. der IP-Adresse)
+        &uuml;ber die Schaltfl&auml;che "Geolocate" oben. Bitte beachte, da&szlig; Dein
+        Knoten über die gelben(!) Ports mit dem Internet-Router verbunden sein mu&szlig;.]])
+    elseif (lat == "51") and (lon == "9") then
+        local s = form:section(cbi.SimpleSection, nil,
+        [[Die automatische Lokalisierung ist <b>fehlgeschlagen</b>. Bitte trage Deine
+        Koordinaten, gerne mit Hilfe der Karte, ein. Bitte beachte, da&szlig; Dein
+        Knoten über die gelben(!) Ports mit dem Internet-Router verbunden sein mu&szlig;.]])
     else
         local addr = uci:get_first("gluon-node-info", 'location', "addr")
         local city = uci:get_first("gluon-node-info", 'location', "city")
         local zip = uci:get_first("gluon-node-info", 'location', "zip")
         local unlocode = uci:get_first("gluon-node-info", "location", "locode")
-	    local community= uci:get_first('siteselect', unlocode, 'sitename')
+        local community = uci:get_first('siteselect', unlocode, 'sitename') or unlocode
         local mystr = string.format("Lokalisierung des Knotens erfolgreich; bitte Daten &uuml;berpr&uuml;fen:<br></br><b>Adresse:</b> %s, %s %s<br></br><b>Koordinaten:</b> %f %f<br></br><b>Community:</b> %s", addr, zip, city, lat, lon, community)
         local s = form:section(cbi.SimpleSection, nil, mystr)
     end
