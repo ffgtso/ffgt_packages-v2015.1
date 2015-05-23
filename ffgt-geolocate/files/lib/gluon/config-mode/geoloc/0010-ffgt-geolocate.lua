@@ -13,12 +13,13 @@ function M.section(form)
         [[Es sind keine Koordinaten hinterlegt. Bitte trage sie ein oder versuche die
         automatische Lokalisierung (anhand der empfangenen Funknetze bzw. der IP-Adresse)
         &uuml;ber die Schaltfl&auml;che "Geolocate" oben. Bitte beachte, da&szlig; Dein
-        Knoten über die gelben(!) Ports mit dem Internet-Router verbunden sein mu&szlig;.]])
+        Knoten über die gelben(!) Ports Internet-Zugang haben mu&szlig;.]])
     elseif (lat == "51") and (lon == "9") then
         local s = form:section(cbi.SimpleSection, nil,
-        [[Die automatische Lokalisierung ist <b>fehlgeschlagen</b>. Bitte trage Deine
+        [[<b>Die automatische Lokalisierung ist fehlgeschlagen.</b> Bitte trage Deine
         Koordinaten, gerne mit Hilfe der Karte, ein. Bitte beachte, da&szlig; Dein
-        Knoten über die gelben(!) Ports mit dem Internet-Router verbunden sein mu&szlig;.]])
+        Knoten über die gelben(!) Ports Internet-Zugange haben mu&szlig;,
+        damit die Karte angezeigt und die Daten validiert werden k&ouml;nnen.]])
     else
         local addr = uci:get_first("gluon-node-info", 'location', "addr")
         local city = uci:get_first("gluon-node-info", 'location', "city")

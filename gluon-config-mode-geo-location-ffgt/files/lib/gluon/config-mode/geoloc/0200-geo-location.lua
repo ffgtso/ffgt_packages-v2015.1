@@ -4,14 +4,15 @@ local uci = luci.model.uci.cursor()
 local M = {}
 
 function M.section(form)
+  local sname = uci:get_first("gluon-node-info", "location")
   local s = form:section(cbi.SimpleSection, nil,
     [[Um deinen Knoten auf der Karte anzeigen zu können, benötigen
     wir seine Koordinaten. Hier hast du die Möglichkeit, diese zu
     hinterlegen.]])
 
   local o
-  local lat = uci:get_first("gluon-node-info", 'location', "latitude")
-  local lon = uci:get_first("gluon-node-info", 'location', "longitude")
+  local lat = uci:get_first("gluon-node-info", sname, "latitude")
+  local lon = uci:get_first("gluon-node-info", sname, "longitude")
   if not lat then lat=0 end
   if not lon then lon=0 end
   if ((lat == 0) or (lat == "51")) and ((lon == 0) or (lon == "9")) then
@@ -50,6 +51,12 @@ function M.handle(data)
     uci:save("gluon-node-info")
     uci:commit("gluon-node-info")
     os.execute('sh "/lib/gluon/ffgt-geolocate/rgeo.sh"')
+    local lat = uci:get_first("gluon-node-info", sname, "latitude")
+    local lon = uci:get_first("gluon-node-info", sname, "longitude")
+    local locode = uci:get_first("gluon-node-info", sname, "locode")
+    if not locode or (lat == "51" and lon == "9") then
+      luci.http.redirect(luci.dispatcher.build_url("gluon-config-mode/wizard-pre"))
+    end
   end
 end
 
