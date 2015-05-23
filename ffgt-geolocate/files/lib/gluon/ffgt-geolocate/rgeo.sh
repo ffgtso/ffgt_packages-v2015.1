@@ -16,8 +16,10 @@ IPVXPREFIX=""
 if [ $USEIPV4 -eq 1 ]; then
  IPVXPREFIX="ipv4."
 fi
-# In theory, both of aboves checks could fail, e. g. on an unconnected node.
-# We might want to catch this case sometime ... (FIXME)
+if [ $USEIPV4 -eq 0 -a $USEIPV6 -eq 0 ]; then
+  echo "$0: IPv5 not implemented."
+  exit 1
+fi
 mac=`/sbin/uci get network.bat0.macaddr`
 curlat="`/sbin/uci get gluon-node-info.@location[0].latitude 2>/dev/null`"
 curlon="`/sbin/uci get gluon-node-info.@location[0].longitude 2>/dev/null`"
