@@ -4,12 +4,8 @@ local uci = luci.model.uci.cursor()
 local M = {}
 
 function M.section(form)
+  local s = form:section(cbi.SimpleSection, nil, [[]])
   local sname = uci:get_first("gluon-node-info", "location")
-  local s = form:section(cbi.SimpleSection, nil,
-    [[Um deinen Knoten auf der Karte anzeigen zu können, benötigen
-    wir seine Koordinaten. Hier hast du die Möglichkeit, diese zu
-    hinterlegen.]])
-
   local o
   local lat = uci:get_first("gluon-node-info", sname, "latitude")
   local lon = uci:get_first("gluon-node-info", sname, "longitude")
