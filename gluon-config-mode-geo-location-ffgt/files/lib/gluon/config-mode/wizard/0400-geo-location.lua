@@ -23,11 +23,7 @@ function M.section(form)
   -- FXIME! This is the totally wrong place, but in geoloc/0200-geo-location.lua
   -- lua/luci fail due to what seems to be a caching issue. I hate to need to work around
   -- stupidity :(
-  local uci = luci.model.uci.cursor()
-  local lat = uci:get_first("gluon-node-info", sname, "latitude")
-  local lon = uci:get_first("gluon-node-info", sname, "longitude")
-  local locode = uci:get_first("gluon-node-info", sname, "locode")
-  if not locode or (lat == "51" and lon == "9") then
+  if not unlocode or (lat == "51" and lon == "9") then
     luci.http.redirect(luci.dispatcher.build_url("gluon-config-mode/wizard-pre"))
   end
 
