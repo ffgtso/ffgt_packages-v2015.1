@@ -10,7 +10,7 @@ function M.section(form)
     if not lon then lon=0 end
     if (lat == 0) and (lon == 0) then
         local s = form:section(cbi.SimpleSection, nil,
-        [[Es sind keine Koordinaten hinterlegt. Bitte trage sie ein oder versuche die
+        [[<b>Es sind keine Koordinaten hinterlegt.</b> Bitte trage sie ein oder versuche die
         automatische Lokalisierung (anhand der empfangenen Funknetze bzw. der IP-Adresse)
         &uuml;ber die Schaltfl&auml;che "Geolocate" oben. Bitte beachte, da&szlig; Dein
         Knoten über die gelben(!) Ports Internet-Zugang haben mu&szlig;.]])
