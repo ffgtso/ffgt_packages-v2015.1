@@ -9,9 +9,16 @@ local M = {}
 function M.section(form)
     local lat = uci:get_first("gluon-node-info", 'location', "latitude")
     local lon = uci:get_first("gluon-node-info", 'location', "longitude")
+    local unlocode = uci:get_first("gluon-node-info", "location", "locode")
     if not lat then lat=0 end
     if not lon then lon=0 end
-    if ((lat == 0) or (lat == 51)) and ((lon == 0) or (lon == 9)) then
+    -- FXIME! This is the totally wrong place, but in geoloc/0200-geo-location.lua
+    -- lua/luci fail due to what seems to be a caching issue. I hate to need to work around
+    -- stupidity :(
+    if not unlocode or (lat == "51" and lon == "9") then
+      luci.http.redirect(luci.dispatcher.build_url("gluon-config-mode/wizard-pre"))
+    end
+    if ((lat == 0) or (lat == "51")) and ((lon == 0) or (lon == "9")) then
 	    local s = form:section(cbi.SimpleSection, nil, [[
 	    Geo-Lokalisierung schlug fehl :( Hier hast Du die Möglichkeit,
 	    die Community, mit der sich Dein Knoten verbindet, auszuwählen.
@@ -32,7 +39,6 @@ function M.section(form)
     	o.rmempty = false
 	    o.optional = false
 
-        local unlocode = uci:get_first("gluon-node-info", "location", "locode")
 	    if uci:get_first("gluon-setup-mode", "setup_mode", "configured") == "0" then
 	    	o:value(unlocode, uci:get_first('siteselect', unlocode, 'sitename'))
 	    else

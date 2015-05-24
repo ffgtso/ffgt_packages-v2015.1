@@ -20,12 +20,6 @@ function M.section(form)
     geben w&uuml;rdest.]])
 
   local o
-  -- FXIME! This is the totally wrong place, but in geoloc/0200-geo-location.lua
-  -- lua/luci fail due to what seems to be a caching issue. I hate to need to work around
-  -- stupidity :(
-  if not unlocode or (lat == "51" and lon == "9") then
-    luci.http.redirect(luci.dispatcher.build_url("gluon-config-mode/wizard-pre"))
-  end
 
   o = s:option(cbi.Flag, "_location", "Knoten auf der Karte anzeigen")
   o.default = uci:get_first("gluon-node-info", "location", "share_location", o.disabled)
