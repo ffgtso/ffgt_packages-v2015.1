@@ -34,7 +34,7 @@ function M.section(form)
     		table.insert(sites, s['.name'])
     	end
     	)
-	
+
 	    local o = s:option(cbi.ListValue, "community", "Community")
     	o.rmempty = false
 	    o.optional = false
@@ -55,10 +55,10 @@ function M.section(form)
     	o.rmempty = false
         o.optional = false
         o.value = unlocode
-        -- FIXME! Why isn't this working below? It works with cbi.Value or cbi.ListValue,
-        -- but with cbi.DummyValue I get:
+        -- FIXME! Why isn't this working below? It works with cbi.Value or cbi.ListValue, but with cbi.DummyValue I get:
         -- /lib/gluon/config-mode/wizard//0200-site-select.lua:66: bad argument #2 to 'get' (string expected, got nil)
         -- (with line 66: local secret = uci:get_first('siteselect', data.community, 'secret'))
+        -- Update, 20150525: This might be related to uci:get_first('siteselect'... not working in the first place ...
     end
 end
 
@@ -100,10 +100,10 @@ function M.handle(data)
         local unlocode = uci:get_first("gluon-node-info", "location", "locode")
         local current = uci:get_first('gluon-node-info', 'location', 'siteselect')
 
-        local secret = uci:get_first('siteselect', uncode, 'secret')
+        local secret = uci:get_first('siteselect', unlocode, 'secret')
 
         if not secret or not secret:match(("%x"):rep(64)) then
-            uci:delete('siteselect', uncode, 'secret')
+            uci:delete('siteselect', unlocode, 'secret')
             uci:save('siteselect')
             uci:commit('siteselect')
         else

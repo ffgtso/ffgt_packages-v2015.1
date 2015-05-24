@@ -13,8 +13,10 @@ function M.section(form)
   -- actual file. LuCI really should stop caching shit :(
   -- local lat = uci:get_first("gluon-node-info", sname, "latitude")
   -- local lon = uci:get_first("gluon-node-info", sname, "longitude")
-  local lat = tonumber(sys.exec("uci get gluon-node-info.@location[0].latitude 2>/dev/null"))
-  local lon = tonumber(sys.exec("uci get gluon-node-info.@location[0].longitude 2>/dev/null"))
+  local lat = tonumber(sys.exec("uci get gluon-node-info.@location[0].latitude 2>/dev/null")) or 0
+  local lon = tonumber(sys.exec("uci get gluon-node-info.@location[0].longitude 2>/dev/null")) or 0
+  if not lat then lat=0 end
+  if not lon then lon=0 end
   local maplat = lat
   local maplon = lon
   if ((lat == 0) or (lat == 51)) and ((lon == 0) or (lon == 9)) then
@@ -24,17 +26,24 @@ function M.section(form)
 
     maplat = "51.908624626589585"
     maplon = "8.380953669548035"
+    lat=0
+    lon=0
   end
+  -- At this point, lat/lon are numbers.
 
   o = s:option(cbi.Value, "_latitude", "Breitengrad")
-  o.default = lat
+  if lat ~= 0 then
+    o.default = lat
+  end
   o.rmempty = false
   o.datatype = "float"
   o.description = "z.B. 53.873621"
   o.optional = false
 
   o = s:option(cbi.Value, "_longitude", "Längengrad")
-  o.default = lon
+  if lon ~= 0 then
+    o.default = lon
+  end
   o.rmempty = false
   o.datatype = "float"
   o.description = "z.B. 10.689901"
