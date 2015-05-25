@@ -10,7 +10,7 @@ mobile="`/sbin/uci get gluon-node-info.@location[0].is_mobile 2>/dev/null`"
 if [ $? -eq 1 ]; then
  mobile=0
 fi
-runnow=0
+runnow=1
 isconfigured="`/sbin/uci get gluon-setup-mode.@setup_mode[0].configured 2>/dev/null`"
 if [ "$isconfigured" != "1" ]; then
  isconfigured=0
