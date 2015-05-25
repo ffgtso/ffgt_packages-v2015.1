@@ -6,7 +6,7 @@ local M = {}
 
 function M.section(form)
   local s = form:section(cbi.SimpleSection, nil, [[]])
-  local sname = uci:get_first("gluon-node-info", "location")
+  local sname = uci:get("gluon-node-info", "location")
   local o
   -- FIXME! The below doesn't work after returning from the executing the shell script changing
   -- /etc/config/gluon-node-info (at least on x86-kvm). Thus we do it the hard way, reading the
