@@ -69,8 +69,8 @@ function M.handle(data)
             --uci:set('siteselect', unlocode, "secret", uci:get('fastd', 'mesh_vpn', 'secret'))
             --uci:save('siteselect')
             --uci:commit('siteselect')
-            uci:set('gluon-node-info', 'location', 'debug1a', data.community)
-            uci:set('gluon-node-info', 'location', 'debug1b', 'done')
+            uci:set('gluon-node-info', 'system', 'debug1a', data.community)
+            uci:set('gluon-node-info', 'system', 'debug1b', 'done')
             uci:save('gluon-node-info')
             uci:commit('gluon-node-info')
 
@@ -93,8 +93,8 @@ function M.handle(data)
 
             -- We need to store the selection somewhere. To make this simple,
             -- put it into gluon-node-info:location.siteselect ...
-            uci:delete('gluon-node-info', 'location', 'siteselect')
-            uci:set('gluon-node-info', 'location', 'siteselect', data.community)
+            uci:delete('gluon-node-info', 'system', 'siteselect')
+            uci:set('gluon-node-info', 'system', 'siteselect', data.community)
             uci:save('gluon-node-info')
             uci:commit('gluon-node-info')
 
@@ -109,8 +109,8 @@ function M.handle(data)
         --uci:save('siteselect')
         --uci:commit('siteselect')
 
-        uci:set('gluon-node-info', 'location', 'debug2a', unlocode)
-        uci:set('gluon-node-info', 'location', 'debug2b', 'done')
+        uci:set('gluon-node-info', 'system', 'debug2a', unlocode)
+        uci:set('gluon-node-info', 'system', 'debug2b', 'done')
         uci:save('gluon-node-info')
         uci:commit('gluon-node-info')
 
@@ -130,7 +130,7 @@ function M.handle(data)
         -- We need to store the selection somewhere. To make this simple,
         -- put it into gluon-node-info.location.siteselect ...
         --uci:delete('gluon-node-info', 'location', 'siteselect')
-        uci:set('gluon-node-info', 'location', 'siteselect', unlocode)
+        uci:set('gluon-node-info', 'system', 'siteselect', unlocode)
         uci:save('gluon-node-info')
         uci:commit('gluon-node-info')
 
