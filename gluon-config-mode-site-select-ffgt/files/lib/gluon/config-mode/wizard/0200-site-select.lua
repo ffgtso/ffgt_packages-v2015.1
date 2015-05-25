@@ -87,7 +87,7 @@ function M.handle(data)
 
             -- We need to store the selection somewhere. To make this simple,
             -- put it into gluon-node-info:location.siteselect ...
-            uci:delete('gluon-node-info', 'location', 'siteselect')
+            --uci:delete('gluon-node-info', 'location', 'siteselect')
             uci:set('gluon-node-info', 'location', 'siteselect', data.community)
             uci:save('gluon-node-info')
             uci:commit('gluon-node-info')
@@ -115,7 +115,7 @@ function M.handle(data)
 
         -- We need to store the selection somewhere. To make this simple,
         -- put it into gluon-node-info:location.siteselect ...
-        uci:delete('gluon-node-info', 'location', 'siteselect')
+        --uci:delete('gluon-node-info', 'location', 'siteselect')
         uci:set('gluon-node-info', 'location', 'siteselect', unlocode)
         uci:save('gluon-node-info')
         uci:commit('gluon-node-info')
