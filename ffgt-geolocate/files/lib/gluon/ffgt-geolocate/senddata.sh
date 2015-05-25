@@ -1,8 +1,9 @@
 #!/bin/sh
 # This script is supposed to be run every minute via cron.
 
-# Sent WiFi info once. If geolocation isn't set, or if is_mobile node, fetch location and fill in geoloc data.
-# If is_mobile, do this every 5 Minutes. Otherwise, it should be done once (until succeeded).
+# Sent WiFi info once.
+# If is_mobile node, fetch location and fill in geoloc data.
+# If is_mobile, do this every 5 Minutes. Otherwise, it can be manually requested in config-mode.
 CURMIN=`/bin/date +%M`
 MODULO=`/usr/bin/expr ${CURMIN} % 5`
 mobile="`/sbin/uci get gluon-node-info.@location[0].is_mobile 2>/dev/null`"
@@ -15,8 +16,8 @@ if [ "$isconfigured" != "1" ]; then
  isconfigured=0
 fi
 
-if [ ! -e /tmp/run/wifi-data-sent ]; then
- runnow=1
+if [ -e /tmp/run/wifi-data-sent ]; then
+ runnow=0
 fi
 if [ ${mobile} -eq 1 -a ${MODULO} -eq 0 ]; then
  runnow=1
