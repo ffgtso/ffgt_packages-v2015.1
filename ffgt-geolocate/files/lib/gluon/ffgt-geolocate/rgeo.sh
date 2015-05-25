@@ -1,5 +1,10 @@
 #!/bin/sh
 
+isconfigured="`/sbin/uci get gluon-setup-mode.@setup_mode[0].configured 2>/dev/null`"
+if [ "$isconfigured" != "1" ]; then
+ isconfigured=0
+fi
+
 # Do a reverse geocoding with current lat/lon settings
 # Bloody v4/v6 issues ... From an IPv4-only upstream, the preferred IPv6 AAAA record results in connection errors.
 USEIPV4=1
@@ -37,11 +42,13 @@ if [ "X${curlat}" != "X" -a "X${curlon}" != "X" ]; then
    loc="`/sbin/uci get gluon-node-info.@location[0].locode 2>/dev/null`"
    adr="`/sbin/uci get gluon-node-info.@location[0].addr 2>/dev/null`"
    zip="`/sbin/uci get gluon-node-info.@location[0].zip 2>/dev/null`"
-   if [ "x${zip}" != "x" -a "x${adr}" != "x" ]; then
-    suffix=`echo "util=require 'gluon.util' print(string.format('%s', util.node_id()))" | /usr/bin/lua | awk '{print substr($1, 9);}'`
-    hostname="${zip}-${adr}-${suffix}"
-    /sbin/uci set system.@system[0].hostname="${hostname}"
-    /sbin/uci commit system
+   if [ $isconfigured -ne 1 ]; then
+     if [ "x${zip}" != "x" -a "x${adr}" != "x" ]; then
+      suffix=`echo "util=require 'gluon.util' print(string.format('%s', util.node_id()))" | /usr/bin/lua | awk '{print substr($1, 9);}'`
+      hostname="${zip}-${adr}-${suffix}"
+      /sbin/uci set system.@system[0].hostname="${hostname}"
+      /sbin/uci commit system
+     fi
    fi
    #/bin/rm -rf /tmp/luci-modulecache/*
   fi
