@@ -49,8 +49,8 @@ function M.section(form)
 	    	o:value(site, uci:get('siteselect', site, 'sitename'))
         end
     else
-        local s = form:section(cbi.SimpleSection, nil, [[Geo-Lokalisierung erfolgreich.]])
         local unlocode = uci:get_first("gluon-node-info", "location", "locode")
+        local s = form:section(cbi.SimpleSection, nil, [[Geo-Lokalisierung erfolgreich.]])
         local o = s:option(cbi.DummyValue, "community", "Community-Code")
     	o.rmempty = false
         o.optional = false
@@ -62,7 +62,6 @@ function M.section(form)
 end
 
 function M.handle(data)
-  local sname = uci:get_first("gluon-node-info", "location")
     if data.community then
         --if data.community ~= site.site_code then
             -- FIXME! Won't work as unlocode is the NEW setting already and the former use of site.site_code doesn't apply for FFGT
@@ -70,8 +69,10 @@ function M.handle(data)
             --uci:set('siteselect', unlocode, "secret", uci:get('fastd', 'mesh_vpn', 'secret'))
             --uci:save('siteselect')
             --uci:commit('siteselect')
-            uci:set('gluon-node-info', sname, 'debug1a', data.community)
-            uci:set('gluon-node-info', sname, 'debug1b', 'done')
+            uci:set('gluon-node-info', 'location', 'debug1a', data.community)
+            uci:set('gluon-node-info', 'location', 'debug1b', 'done')
+            uci:save('gluon-node-info')
+            uci:commit('gluon-node-info')
 
 
             -- Deleting this unconditionally would leave the node without a secret in case the
@@ -92,8 +93,8 @@ function M.handle(data)
 
             -- We need to store the selection somewhere. To make this simple,
             -- put it into gluon-node-info:location.siteselect ...
-            uci:delete('gluon-node-info', sname, 'siteselect')
-            uci:set('gluon-node-info', sname, 'siteselect', data.community)
+            uci:delete('gluon-node-info', 'location', 'siteselect')
+            uci:set('gluon-node-info', 'location', 'siteselect', data.community)
             uci:save('gluon-node-info')
             uci:commit('gluon-node-info')
 
@@ -102,14 +103,16 @@ function M.handle(data)
         --end
     else
         -- The UN/LOCODE is the relevant information. No user servicable parts in the UI ;)
-        local unlocode = uci:get_first("gluon-node-info", sname, "locode")
-        local current = uci:get_first('gluon-node-info', sname, 'siteselect')
+        local unlocode = uci:get_first("gluon-node-info", 'location', "locode")
+        local current = uci:get_first('gluon-node-info', 'location', 'siteselect')
         --uci:set('siteselect', unlocode, "secret", uci:get('fastd', 'mesh_vpn', 'secret'))
         --uci:save('siteselect')
         --uci:commit('siteselect')
 
-        uci:set('gluon-node-info', sname, 'debug2a', unlocode)
-        uci:set('gluon-node-info', sname, 'debug2b', 'done')
+        uci:set('gluon-node-info', 'location', 'debug2a', unlocode)
+        uci:set('gluon-node-info', 'location', 'debug2b', 'done')
+        uci:save('gluon-node-info')
+        uci:commit('gluon-node-info')
 
         local secret = uci:get_first('siteselect', unlocode, 'secret')
 
@@ -125,9 +128,9 @@ function M.handle(data)
         end
 
         -- We need to store the selection somewhere. To make this simple,
-        -- put it into gluon-node-info:location.siteselect ...
+        -- put it into gluon-node-info.location.siteselect ...
         --uci:delete('gluon-node-info', 'location', 'siteselect')
-        uci:set('gluon-node-info', sname, 'siteselect', unlocode)
+        uci:set('gluon-node-info', 'location', 'siteselect', unlocode)
         uci:save('gluon-node-info')
         uci:commit('gluon-node-info')
 
