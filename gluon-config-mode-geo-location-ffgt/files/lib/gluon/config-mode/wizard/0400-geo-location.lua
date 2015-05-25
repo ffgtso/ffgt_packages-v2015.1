@@ -50,7 +50,7 @@ function M.section(form)
 end
 
 function M.handle(data)
-  local sname = uci:get("gluon-node-info", "location")
+  local sname = uci:get_first("gluon-node-info", "location")
 
   uci:set("gluon-node-info", sname, "share_location", data._location)
   --if data._location and data._latitude ~= nil and data._longitude ~= nil then
