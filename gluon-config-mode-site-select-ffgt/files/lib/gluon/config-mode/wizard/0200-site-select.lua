@@ -2,6 +2,7 @@ local cbi = require "luci.cbi"
 local uci = luci.model.uci.cursor()
 local site = require 'gluon.site_config'
 local fs = require "nixio.fs"
+local sys = luci.sys
 
 local sites = {}
 local M = {}
@@ -69,8 +70,8 @@ function M.handle(data)
             --uci:set('siteselect', unlocode, "secret", uci:get('fastd', 'mesh_vpn', 'secret'))
             --uci:save('siteselect')
             --uci:commit('siteselect')
-            uci:set('gluon-node-info', 'system', 'debug1a', data.community)
-            uci:set('gluon-node-info', 'system', 'debug1b', 'done')
+            uci:set('gluon-node-info', 'location', 'debug1a', data.community)
+            uci:set('gluon-node-info', 'location', 'debug1b', 'done')
             uci:save('gluon-node-info')
             uci:commit('gluon-node-info')
 
@@ -93,8 +94,8 @@ function M.handle(data)
 
             -- We need to store the selection somewhere. To make this simple,
             -- put it into gluon-node-info:location.siteselect ...
-            uci:delete('gluon-node-info', 'system', 'siteselect')
-            uci:set('gluon-node-info', 'system', 'siteselect', data.community)
+            uci:delete('gluon-node-info', 'location', 'siteselect')
+            uci:set('gluon-node-info', 'location', 'siteselect', data.community)
             uci:save('gluon-node-info')
             uci:commit('gluon-node-info')
 
@@ -109,10 +110,14 @@ function M.handle(data)
         --uci:save('siteselect')
         --uci:commit('siteselect')
 
-        uci:set('gluon-node-info', 'system', 'debug2a', unlocode)
-        uci:set('gluon-node-info', 'system', 'debug2b', 'done')
-        uci:save('gluon-node-info')
-        uci:commit('gluon-node-info')
+        -- Actually, fuck you, LuCI. If this doesn't work, although imho it should, let's
+        -- use the shell to do what you resist of doing. I'm fed with this shit. FIXME!
+        -- uci:set('gluon-node-info', 'location', 'debug2a', unlocode)
+        -- uci:set('gluon-node-info', 'location', 'debug2b', 'done')
+        -- uci:save('gluon-node-info')
+        -- uci:commit('gluon-node-info')
+        sys.exec(string.format("/sbin/uci set gluon-node-info.@location[0].debug2=%c%s%c 2>/dev/null", 39, "yes", 39))
+        sys.exec(string.format("/sbin/uci commit gluon-node-info 2>/dev/null"))
 
         local secret = uci:get_first('siteselect', unlocode, 'secret')
 
@@ -130,9 +135,11 @@ function M.handle(data)
         -- We need to store the selection somewhere. To make this simple,
         -- put it into gluon-node-info.location.siteselect ...
         --uci:delete('gluon-node-info', 'location', 'siteselect')
-        uci:set('gluon-node-info', 'system', 'siteselect', unlocode)
+        uci:set('gluon-node-info', 'location', 'siteselect', unlocode)
         uci:save('gluon-node-info')
         uci:commit('gluon-node-info')
+        sys.exec(string.format("/sbin/uci set gluon-node-info.@location[0].siteselect=%c%s%c 2>/dev/null", 39, unlocode, 39))
+        sys.exec(string.format("/sbin/uci commit gluon-node-info 2>/dev/null"))
 
         fs.copy(uci:get('siteselect', unlocode, 'path'), '/lib/gluon/site.conf')
         os.execute('sh "/lib/gluon/site-upgrade"')

@@ -7,5 +7,5 @@ local fs = require "nixio.fs"
 local community=uci:get('gluon-node-info', 'location', 'siteselect')
 fs.copy(uci:get('siteselect', community , 'path'), '/lib/gluon/site.conf')
 
--- Oh Gluon gods, is this necessary?!
--- os.execute('sh "/lib/gluon/site-upgrade"')
+Oh Gluon gods, is this necessary?!
+os.execute('sh "/lib/gluon/site-upgrade"')
