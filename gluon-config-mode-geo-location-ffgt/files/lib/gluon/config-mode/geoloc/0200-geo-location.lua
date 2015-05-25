@@ -54,27 +54,36 @@ function M.section(form)
 end
 
 function M.handle(data)
-  local sname = uci:get_first("gluon-node-info", "location")
+  function trim(s)
+    return s:match "^%s*(.-)%s*$"
+  end
 
+  local sname = uci:get_first("gluon-node-info", "location")
   if data._latitude ~= nil and data._longitude ~= nil then
-    uci:set("gluon-node-info", sname, "latitude", data._latitude)
-    uci:set("gluon-node-info", sname, "longitude", data._longitude)
-    uci:save("gluon-node-info")
-    uci:commit("gluon-node-info")
-    os.execute('sh "/lib/gluon/ffgt-geolocate/rgeo.sh"')
-    -- Hrmpft. This isn't working due to broken caching. Fsck you, LuCI!
-    --local ucinew = luci.model.uci.cursor()
-    --local lat = ucinew:get_first("gluon-node-info", sname, "latitude")
-    --local lon = ucinew:get_first("gluon-node-info", sname, "longitude")
-    --local locode = ucinew:get_first("gluon-node-info", sname, "locode")
-    --if not locode or (lat == "51" and lon == "9") then
-    --if verifylocation() == 0 then
-    --  luci.http.redirect(luci.dispatcher.build_url("gluon-config-mode/wizard-pre"))
-    --end
-    local lat = tonumber(sys.exec("uci get gluon-node-info.@location[0].latitude 2>/dev/null"))
-    local lon = tonumber(sys.exec("uci get gluon-node-info.@location[0].longitude 2>/dev/null"))
-    if ((lat == 0) or (lat == 51)) and ((lon == 0) or (lon == 9)) then
-      luci.http.redirect(luci.dispatcher.build_url("gluon-config-mode/wizard-pre"))
+    local lat = tonumber(sys.exec("uci get gluon-node-info.@location[0].latitude 2>/dev/null")) or 0
+    local lon = tonumber(sys.exec("uci get gluon-node-info.@location[0].longitude 2>/dev/null")) or 0
+    local newlat = tonumber(trim(data._latitude)) or 51
+    local newlon = tonumber(trim(data._longitude)) or 9
+    if lat ~= newlat or lon ~= newlon then
+      uci:set("gluon-node-info", sname, "latitude", data._latitude)
+      uci:set("gluon-node-info", sname, "longitude", data._longitude)
+      uci:save("gluon-node-info")
+      uci:commit("gluon-node-info")
+      os.execute('sh "/lib/gluon/ffgt-geolocate/rgeo.sh"')
+      -- Hrmpft. This isn't working due to broken caching. Fsck you, LuCI!
+      --local ucinew = luci.model.uci.cursor()
+      --local lat = ucinew:get_first("gluon-node-info", sname, "latitude")
+      --local lon = ucinew:get_first("gluon-node-info", sname, "longitude")
+      --local locode = ucinew:get_first("gluon-node-info", sname, "locode")
+      --if not locode or (lat == "51" and lon == "9") then
+      --if verifylocation() == 0 then
+      --  luci.http.redirect(luci.dispatcher.build_url("gluon-config-mode/wizard-pre"))
+      --end
+      lat = tonumber(sys.exec("uci get gluon-node-info.@location[0].latitude 2>/dev/null"))
+      lon = tonumber(sys.exec("uci get gluon-node-info.@location[0].longitude 2>/dev/null"))
+      if ((lat == 0) or (lat == 51)) and ((lon == 0) or (lon == 9)) then
+        luci.http.redirect(luci.dispatcher.build_url("gluon-config-mode/wizard-pre"))
+      end
     end
   end
 end
