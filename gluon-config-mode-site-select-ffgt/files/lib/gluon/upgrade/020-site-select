@@ -5,10 +5,14 @@ local site = require 'gluon.site_config'
 local fs = require "nixio.fs"
 local c = uci.cursor()
 
-local newcommunity=c:get_first('gluon-node-info', 'location', 'siteselect')
-local curcommunity=site.site_selectcode or 'none'
-if newcommunity ~= curcommunity then
-  fs.copy(c:get('siteselect', community , 'path'), '/lib/gluon/site.conf')
+if not fs.access("/tmp/site-upgrade.lock") then
+  os.execute('/bin/touch /tmp/site-upgrade.lock')
+  local newcommunity=c:get_first('gluon-node-info', 'location', 'siteselect')
+  local curcommunity=site.site_selectcode or 'none'
+  if newcommunity ~= curcommunity then
+    fs.copy(c:get('siteselect', community , 'path'), '/lib/gluon/site.conf')
 
-  os.execute('sh "/lib/gluon/site-upgrade"')
+    os.execute('sh "/lib/gluon/site-upgrade"')
+  end
+  os.execute('/bin/rm -f /tmp/site-upgrade.lock')
 end
