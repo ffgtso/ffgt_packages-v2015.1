@@ -5,7 +5,10 @@ local site = require 'gluon.site_config'
 local fs = require "nixio.fs"
 local c = uci.cursor()
 
-local community=c:get_first('gluon-node-info', 'location', 'siteselect')
-fs.copy(c:get('siteselect', community , 'path'), '/lib/gluon/site.conf')
+local newcommunity=c:get_first('gluon-node-info', 'location', 'siteselect')
+local curcommunity=site.site_selectcode or 'none'
+if newcommunity ~= curcommunity then
+  fs.copy(c:get('siteselect', community , 'path'), '/lib/gluon/site.conf')
 
-os.execute('sh "/lib/gluon/site-upgrade"')
+  os.execute('sh "/lib/gluon/site-upgrade"')
+end
