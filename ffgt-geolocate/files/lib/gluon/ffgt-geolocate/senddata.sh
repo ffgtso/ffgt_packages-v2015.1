@@ -34,10 +34,10 @@ if [ ${runnow} -eq 1 ]; then
 # Bloody v4/v6 issues ... From an IPv4-only upstream, the preferred IPv6 AAAA record results in connection errors.
  USEIPV4=1
  USEIPV6=0
- /bin/ping -q -c 3 setup.ipv4.guetersloh.freifunk.net >/dev/null 2>&1
+ /bin/ping -q -c 3 setup.ipv4.4830.org >/dev/null 2>&1
  if [ $? -ne 0 ]; then
   USEIPV4=0
-  /bin/ping -q -c 3 setup.guetersloh.freifunk.net >/dev/null 2>&1
+  /bin/ping -q -c 3 setup.ipv6.4830.org >/dev/null 2>&1
   if [ $? -eq 0 ]; then
    USEIPV6=1
   fi
@@ -71,7 +71,7 @@ fi
   if [ "X${curlat}" = "X" -o "X${mobile}" = "X1" -o ${forcerun} -eq 1 ]; then
    /bin/cat /dev/null >/tmp/geoloc.sh
    sleep 2
-   /usr/bin/wget -q -O /tmp/geoloc.out "http://setup.${IPVXPREFIX}guetersloh.freifunk.net/geoloc.php?list=me&node=$mac"
+   /usr/bin/wget -q -O /tmp/geoloc.out "http://setup.${IPVXPREFIX}4830.org/geoloc.php?list=me&node=$mac"
    if [ -e /tmp/geoloc.out ]; then
     # Actually, we might want to sanity check the reply, as it could be empty or worse ... (FIXME)
     haslocation="`/sbin/uci get gluon-node-info.@location[0] 2>/dev/null]`"
