@@ -16,6 +16,10 @@ if [ "$isconfigured" != "1" ]; then
  isconfigured=0
 fi
 
+if [ -e /tmp/run/wifi-data-sent ]; then
+ runnow=0
+fi
+
 if [ $# -eq 1 ]; then
   forcerun=1
   runnow=1
@@ -23,9 +27,6 @@ else
   forcerun=0
 fi
 
-if [ -e /tmp/run/wifi-data-sent ]; then
- runnow=0
-fi
 if [ ${mobile} -eq 1 -a ${MODULO} -eq 0 ]; then
  runnow=1
 fi
