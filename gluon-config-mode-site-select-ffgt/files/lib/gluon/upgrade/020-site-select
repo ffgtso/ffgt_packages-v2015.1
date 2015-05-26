@@ -1,10 +1,11 @@
 #!/usr/bin/lua
 
-local uci = luci.model.uci.cursor()
+local uci = require 'luci.model.uci'
 local site = require 'gluon.site_config'
 local fs = require "nixio.fs"
+local c = uci.cursor()
 
-local community=uci:get('gluon-node-info', 'location', 'siteselect')
-fs.copy(uci:get('siteselect', community , 'path'), '/lib/gluon/site.conf')
+local community=c:get_first('gluon-node-info', 'location', 'siteselect')
+fs.copy(c:get('siteselect', community , 'path'), '/lib/gluon/site.conf')
 
 os.execute('sh "/lib/gluon/site-upgrade"')
