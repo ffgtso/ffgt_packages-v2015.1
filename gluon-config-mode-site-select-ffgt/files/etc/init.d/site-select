@@ -1,0 +1,24 @@
+#!/bin/sh /etc/rc.common
+
+START=99
+
+
+newcommunity="`/sbin/uci get gluon-node-info.@location[0].siteselect 2>/dev/null`"
+curcommunity=`/usr/bin/lua -e "local site=require 'gluon.site_config' local curcommunity=site.site_selectcode or 'none' print (curcommunity)"`
+
+if [ "X${newcommunity}" == "X" ]; then
+  # siteselect isn't there, shouldn't happen. Check for locode.
+  locode="`/sbin/uci get gluon-node-info.@location[0].locode 2>/dev/null`"
+  if [ "X${locode}" == "X" ]; then
+    # Missing as well. Try rgeo call in a minute.
+    ((sleep 60; /lib/gluon/ffgt-geolocate/rgeo.sh)&) #))
+  else
+     newcommunity="${locode}"
+  fi
+fi
+
+if [ "X${newcommunity}" != "${curcommunity}" ]; then
+    srcfile="`/sbin/uci get siteselect.${newcommunity}.path`"
+    /bin/cp ${srcfile} /lib/gluon/site.conf
+    /lib/gluon/site-upgrade
+fi
