@@ -60,10 +60,12 @@ function M.handle(data)
 
   local sname = uci:get_first("gluon-node-info", "location")
   if data._latitude ~= nil and data._longitude ~= nil then
+    data._latitude=trim(data._latitude)
+    data._longitude=trim(data._longitude)
     local lat = tonumber(sys.exec("uci get gluon-node-info.@location[0].latitude 2>/dev/null")) or 0
     local lon = tonumber(sys.exec("uci get gluon-node-info.@location[0].longitude 2>/dev/null")) or 0
-    local newlat = tonumber(trim(data._latitude)) or 51
-    local newlon = tonumber(trim(data._longitude)) or 9
+    local newlat = tonumber(data._latitude) or 51
+    local newlon = tonumber(data._longitude) or 9
     if lat ~= newlat or lon ~= newlon then
       uci:set("gluon-node-info", sname, "latitude", data._latitude)
       uci:set("gluon-node-info", sname, "longitude", data._longitude)
