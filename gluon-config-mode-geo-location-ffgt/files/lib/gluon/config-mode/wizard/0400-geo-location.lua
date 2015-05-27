@@ -13,7 +13,7 @@ function M.section(form)
   local unlocode = uci:get_first("gluon-node-info", "location", "locode")
   -- FIXME! This isn't working at all. WTF?! This luci.model.uci.cursor() thingy is fucked up beyond belief :(
   -- local community = uci:get_first('siteselect', unlocode, 'sitename')
-  local community = sys.exec(string.format("uci get siteselect.%s.sitename 2>/dev/null", unlocode))
+  local community = string.gsub(sys.exec(string.format("uci get siteselect.%s.sitename 2>/dev/null", unlocode)), "\n", "")
   local mystr = string.format("Lokalisierung des Knotens erfolgreich; bitte Daten &uuml;berpr&uuml;fen:<br></br><b>Adresse:</b> %s, %s %s<br></br><b>Koordinaten:</b> %f %f<br></br><b>Community:</b> %s", addr, zip, city, lat, lon, community)
   local s = form:section(cbi.SimpleSection, nil, mystr)
 
