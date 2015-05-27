@@ -4,33 +4,40 @@ local uci = require 'luci.model.uci'
 local site = require 'gluon.site_config'
 local fs = require "nixio.fs"
 local c = uci.cursor()
-local sys = luci.sys
+local sys = require 'luci.sys'
 
 if not fs.access("/tmp/site-upgrade.lock") then
   os.execute('/bin/touch /tmp/site-upgrade.lock')
   local newcommunity=c:get_first('gluon-node-info', 'location', 'siteselect')
   if not newcommunity then
-    -- Upgrade from non-site-select firmware: try rgeo, then try geolocate, then use gto.
+    os.execute("echo 'Upgrading from legacy FW.'")
+    -- Upgrade from non-site-select firmware: try geolocate if needed, try rgeo, use gto as last resort.
     local lat = tonumber(sys.exec("uci get gluon-node-info.@location[0].latitude 2>/dev/null")) or 0
     local lon = tonumber(sys.exec("uci get gluon-node-info.@location[0].longitude 2>/dev/null")) or 0
     if ((lat == 0) or (lat == 51)) and ((lon == 0) or (lon == 9)) then
-      sys.exec('/bin/rm -f /tmp/run/wifi-data-sent')
-      sys.exec('/lib/gluon/ffgt-geolocate/senddata.sh force')
+      os.execute("echo 'Forcing gelococation due to missing coordinates'")
+      os.execute('/bin/rm -f /tmp/run/wifi-data-sent')
+      os.execute('/lib/gluon/ffgt-geolocate/senddata.sh force')
     end
     if fs.access("/lib/gluon/ffgt-geolocate/rgeo.sh") then
-      sys.exec('/lib/gluon/ffgt-geolocate/rgeo.sh')
+      os.execute("echo 'Doing reverse geolocating.'")
+      os.execute('/lib/gluon/ffgt-geolocate/rgeo.sh')
     end
-    newcommunity = sys.exec("uci get gluon-node-info.@location[0].locode 2>/dev/null") or ''
+    newcommunity = string.gsub(sys.exec("uci get gluon-node-info.@location[0].locode 2>/dev/null"), "\n", "") or ''
     if string.len(newcommunity) == 0 then
       newcommunity = "gto"
     end
-    sys.exec(string.format("/sbin/uci set gluon-node-info.@location[0].siteselect=%c%s%c 2>/dev/null", 39, newcommunity, 39))
-    sys.exec(string.format("/sbin/uci commit gluon-node-info 2>/dev/null"))
+    os.execute(string.format("/sbin/uci set gluon-node-info.@location[0].siteselect=%c%s%c 2>/dev/null", 39, newcommunity, 39))
+    os.execute(string.format("/sbin/uci commit gluon-node-info 2>/dev/null"))
   end
 
   local curcommunity=site.site_selectcode or 'none'
   if newcommunity ~= curcommunity then
-    fs.copy(c:get('siteselect', newcommunity , 'path'), '/lib/gluon/site.conf')
+    os.execute("echo 'Updating system-wide site.conf'")
+    local cmdline=string.format('/sbin/uci get siteselect.%s.path', newcommunity)
+    local srcfile=string.gsub(sys.exec(cmdline), "\n", "")
+    -- os.execute(string.format("echo src=%s com=%s", srcfile, newcommunity))
+    os.execute(string.format("/bin/cp %s /lib/gluon/site.conf", srcfile))
     os.execute('sh "/lib/gluon/site-upgrade"')
   end
   os.execute('/bin/rm -f /tmp/site-upgrade.lock')
