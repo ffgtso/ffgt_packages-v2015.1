@@ -2,7 +2,7 @@ BEGIN {
  for (i = 0; i <= 255; i++) {
   ord[sprintf("%c", i)] = i
  }
- printf("http://setup.%sguetersloh.freifunk.net/geoloc.php?node=%s", ipv4prefix, escape(mac));
+ printf("http://setup.%s4830.org/geoloc.php?node=%s", ipv4prefix, escape(mac));
  numwifi=0;
 }
 function escape(str, c, len, res) {

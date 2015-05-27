@@ -46,7 +46,7 @@ if [ ${runnow} -eq 1 ]; then
  if [ $USEIPV4 -eq 1 ]; then
   IPVXPREFIX="ipv4."
  else
-  IPVXPREFIX=""
+  IPVXPREFIX="ipv6."
  fi
  # In theory, both of aboves checks could fail, e. g. on an unconnected node.
  # We might want to catch this case sometime ... (FIXME)
