@@ -17,7 +17,7 @@ if [ $? -ne 0 ]; then
   USEIPV6=1
  fi
 fi
-IPVXPREFIX=""
+IPVXPREFIX="ipv6."
 if [ $USEIPV4 -eq 1 ]; then
  IPVXPREFIX="ipv4."
 fi
