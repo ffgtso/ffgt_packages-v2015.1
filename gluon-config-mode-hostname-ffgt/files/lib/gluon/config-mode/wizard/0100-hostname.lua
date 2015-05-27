@@ -23,6 +23,20 @@ function M.section(form)
 end
 
 function M.handle(data)
+  local zip = uci:get_first("gluon-node-info", 'location', "zip")
+  local hostname = data._hostname
+  hostname = hostname:gsub(" ","-")
+  hostname = hostname:gsub("%.","-")
+  hostname = hostname:gsub("%,","-")
+  hostname = hostname:gsub("_","-")
+  hostname = hostname:gsub("--","-")
+  hostname = hostname:gsub("ffgt-", zip .. "-")
+  hostname = hostname:gsub("ffrw-", zip .. "-")
+  hostname = hostname:gsub("freifunk-", zip .. "-")
+  hostname = hostname:gsub("gut-", zip .. "-")
+  hostname = hostname:gsub("rhwd-", zip .. "-")
+  hostname = hostname:sub(1, 63)
+
   uci:set("system", uci:get_first("system", "system"), "hostname", data._hostname)
   uci:save("system")
   uci:commit("system")
