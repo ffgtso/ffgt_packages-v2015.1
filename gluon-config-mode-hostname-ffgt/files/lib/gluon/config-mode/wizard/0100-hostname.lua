@@ -35,6 +35,7 @@ function M.handle(data)
   hostname = hostname:gsub("freifunk-", zip .. "-")
   hostname = hostname:gsub("gut-", zip .. "-")
   hostname = hostname:gsub("rhwd-", zip .. "-")
+  hostname = hostname:gsub("muer-", zip .. "-")
   hostname = hostname:sub(1, 63)
 
   uci:set("system", uci:get_first("system", "system"), "hostname", data._hostname)
