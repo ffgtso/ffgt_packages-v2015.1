@@ -116,8 +116,11 @@ function M.handle(data)
         -- uci:set('gluon-node-info', 'location', 'debug2b', 'done')
         -- uci:save('gluon-node-info')
         -- uci:commit('gluon-node-info')
-        sys.exec(string.format("/sbin/uci set gluon-node-info.@location[0].debug2=%c%s%c 2>/dev/null", 39, "yes", 39))
-        sys.exec(string.format("/sbin/uci commit gluon-node-info 2>/dev/null"))
+        --
+        -- The following does work ...
+        --
+        -- sys.exec(string.format("/sbin/uci set gluon-node-info.@location[0].debug2=%c%s%c 2>/dev/null", 39, "yes", 39))
+        -- sys.exec(string.format("/sbin/uci commit gluon-node-info 2>/dev/null"))
 
         local secret = uci:get_first('siteselect', unlocode, 'secret')
 
