@@ -40,3 +40,5 @@ if [ $? -eq 0 ]; then
     echo "Buildjob: ${JOB_URL}" >>images/factory/ffgt-firmware-buildinfo-${RELEASE}
 fi
 ```
+
+This assumes that each repo is checked out separately (by Jenkins) at job's root, obviously.
