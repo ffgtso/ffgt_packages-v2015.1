@@ -96,8 +96,10 @@ if [ ${runnow} -eq 1 ]; then
       adr="`/sbin/uci get gluon-node-info.@location[0].addr 2>/dev/null`"
       zip="`/sbin/uci get gluon-node-info.@location[0].zip 2>/dev/null`"
       if [ "x${zip}" != "x" -a "x${adr}" != "x" ]; then
-       suffix=`echo "util=require 'gluon.util' print(string.format('%s', util.node_id()))" | /usr/bin/lua | awk '{print substr($1, 9);}'`
-       hostname="${zip}-${adr}-${suffix}"
+       nodeid=`echo "util=require 'gluon.util' print(string.format('%s', string.sub(util.node_id(), 9)))" | /usr/bin/lua`
+       #suffix=`echo "util=require 'gluon.util' print(string.format('%s', string.sub(util.node_id(), 9)))" | /usr/bin/lua`
+       #hostname="${zip}-${adr}-${suffix}"
+       hostname="${zip}-freifunk-${nodeid}"
        /sbin/uci set system.@system[0].hostname="${hostname}"
        /sbin/uci commit system
       fi
