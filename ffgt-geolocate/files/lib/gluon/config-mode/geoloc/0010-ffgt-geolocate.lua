@@ -22,9 +22,9 @@ function M.section(form)
     Knoten über die gelben(!) Ports Internet-Zugange haben mu&szlig;,
     damit die Karte angezeigt und die Daten validiert werden k&ouml;nnen.]])
   else
-    local addr = uci:get_first("gluon-node-info", 'location', "addr")
-    local city = uci:get_first("gluon-node-info", 'location', "city")
-    local zip = uci:get_first("gluon-node-info", 'location', "zip")
+    local addr = uci:get_first("gluon-node-info", 'location', "addr") or "FEHLER_ADDR"
+    local city = uci:get_first("gluon-node-info", 'location', "city") or "FEHLER_ORT"
+    local zip = uci:get_first("gluon-node-info", 'location', "zip") or "00000"
     local unlocode = uci:get_first("gluon-node-info", "location", "locode")
     local community = uci:get_first('siteselect', unlocode, 'sitename') or unlocode
     if community == unlocode then
