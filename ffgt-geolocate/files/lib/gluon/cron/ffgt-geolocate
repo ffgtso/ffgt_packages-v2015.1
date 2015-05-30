@@ -1,1 +1,1 @@
-*/5 * * * * /lib/gluon/ffgt-geolocate/senddata.sh
+#*/5 * * * * /lib/gluon/ffgt-geolocate/senddata.sh
