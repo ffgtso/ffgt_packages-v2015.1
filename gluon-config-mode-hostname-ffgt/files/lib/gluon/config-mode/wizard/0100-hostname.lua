@@ -9,7 +9,9 @@ function M.section(form)
   local s = form:section(cbi.SimpleSection, nil, [[Bitte gib' Deinem
   Knoten einen sprechenden Namen (z. B. Adresse, Bauwerk, Gesch&auml;ft).
   Es k&ouml;nnen nur Buchstaben, Zahlen und der Bindestrich verwendet
-  werden, jenseits 30 Zeichen wird abgeschnitten.]])
+  werden, jenseits 30 Zeichen wird abgeschnitten. Bitte den Namen mit
+  der PLZ des Aufstellstandortes beginnen lassen wie in den Beispielen;
+  so behalten wir auch ohne die Karte einen &Uuml;berblick.]])
   local o = s:option(cbi.Value, "_hostname", "Name dieses Knotens")
   o.value = hostname
   o.rmempty = false
@@ -20,13 +22,13 @@ function M.section(form)
   local mac = string.sub(util.node_id(), 9)
   local mystrA = string.format("%s-%s-%s", zip, addr, mac)
   if mystrA ~= hostname then
-    local o = s:option(cbi.DummyValue, "_defaulthostnameA", "Namensvorschlag 1")
+    local o = s:option(cbi.DummyValue, "_defaulthostnameA", "Namensbeispiel")
     o.value = mystrA
   end
   mac = util.node_id()
   local mystrB = string.format("%s-freifunk-%s", zip,mac)
   if mystrB ~= hostname then
-    local o = s:option(cbi.DummyValue, "_defaulthostnameB", "Namensvorschlag 2")
+    local o = s:option(cbi.DummyValue, "_defaulthostnameB", "Namensbeispiel")
     o.value = mystrB
   end
 end
