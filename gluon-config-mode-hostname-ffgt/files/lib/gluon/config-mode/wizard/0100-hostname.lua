@@ -45,7 +45,7 @@ function M.handle(data)
   hostname = hostname:gsub("^muer-", zip .. "-")
   hostname = hostname:sub(1, 63)
 
-  uci:set("system", uci:get_first("system", "system"), "hostname", data._hostname)
+  uci:set("system", uci:get_first("system", "system"), "hostname", hostname)
   uci:save("system")
   uci:commit("system")
 end
