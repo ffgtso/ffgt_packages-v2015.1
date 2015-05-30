@@ -6,29 +6,47 @@ local M = {}
 
 function M.section(form)
   local hostname = uci:get_first("system", "system", "hostname")
+  local addr = uci:get_first("gluon-node-info", 'location', "addr")
+  local zip = uci:get_first("gluon-node-info", 'location', "zip")
+  local mac = string.sub(util.node_id(), 9)
+
+  hostname = hostname:gsub("^ffgt%-", "")
+  hostname = hostname:gsub("^ffrw%-", "")
+  hostname = hostname:gsub("^freifunk%-", "")
+  hostname = hostname:gsub("^gut%-", "")
+  hostname = hostname:gsub("^tst%-", "")
+  hostname = hostname:gsub("^rhwd%-", "")
+  hostname = hostname:gsub("^muer%-", "")
+  hostname = hostname:gsub("^" .. zip .. "%-", "")
+  hostname = hostname:gsub(" ","-")
+  hostname = hostname:gsub("%p","-")
+  hostname = hostname:gsub("_","-")
+  hostname = hostname:gsub("%-%-","-")
+  hostname = hostname:sub(1, 30)
+
   local s = form:section(cbi.SimpleSection, nil, [[Bitte gib' Deinem
   Knoten einen sprechenden Namen (z. B. Adresse, Bauwerk, Gesch&auml;ft).
   Es k&ouml;nnen nur Buchstaben, Zahlen und der Bindestrich verwendet
-  werden, jenseits 30 Zeichen wird abgeschnitten. Bitte den Namen mit
-  der PLZ des Aufstellstandortes beginnen lassen wie in den Beispielen;
-  so behalten wir auch ohne die Karte einen &Uuml;berblick.]])
-  local o = s:option(cbi.Value, "_hostname", "Name dieses Knotens")
+  werden, jenseits 30 Zeichen wird abgeschnitten. Dem Namen wird die
+  PLZ des Aufstellstandortes vorangestellt, Prefixe sind also nicht
+  notwendig.]])
+  local optstr=string.format("Name dieses Knotens: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %s-", zip)
+  local o = s:option(cbi.Value, "_hostname", optstr)
   o.value = hostname
   o.rmempty = false
   o.datatype = "hostname"
 
-  local addr = uci:get_first("gluon-node-info", 'location', "addr")
-  local zip = uci:get_first("gluon-node-info", 'location', "zip")
-  local mac = string.sub(util.node_id(), 9)
-  local mystrA = string.format("%s-%s-%s", zip, addr, mac)
+  local mystrA = string.format("%s-%s", addr, mac)
   if mystrA ~= hostname then
-    local o = s:option(cbi.DummyValue, "_defaulthostnameA", "Namensbeispiel")
+    optstr=string.format("Namensbeispiel Adresse: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %s-", zip)
+    local o = s:option(cbi.DummyValue, "_defaulthostnameA", optstr)
     o.value = mystrA
   end
   mac = util.node_id()
-  local mystrB = string.format("%s-freifunk-%s", zip,mac)
+  local mystrB = string.format("freifunk-%s", mac)
   if mystrB ~= hostname then
-    local o = s:option(cbi.DummyValue, "_defaulthostnameB", "Namensbeispiel")
+    optstr=string.format("Namensbeispiel Ger&auml;tenummer: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %s-", zip)
+    local o = s:option(cbi.DummyValue, "_defaulthostnameB", optstr)
     o.value = mystrB
   end
 end
@@ -36,17 +54,11 @@ end
 function M.handle(data)
   local zip = uci:get_first("gluon-node-info", 'location', "zip")
   local hostname = data._hostname
-  hostname = hostname:gsub("^ffgt%-", zip .. "-")
-  hostname = hostname:gsub("^ffrw%-", zip .. "-")
-  hostname = hostname:gsub("^freifunk%-", zip .. "-")
-  hostname = hostname:gsub("^gut%-", zip .. "-")
-  hostname = hostname:gsub("^tst%-", zip .. "-")
-  hostname = hostname:gsub("^rhwd%-", zip .. "-")
-  hostname = hostname:gsub("^muer%-", zip .. "-")
   hostname = hostname:gsub(" ","-")
   hostname = hostname:gsub("%p","-")
   hostname = hostname:gsub("_","-")
   hostname = hostname:gsub("%-%-","-")
+  hostname = zip .. "-" .. hostname
   hostname = hostname:sub(1, 30)
 
   uci:set("system", uci:get_first("system", "system"), "hostname", hostname)
