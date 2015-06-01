@@ -7,6 +7,7 @@ local M = {}
 function M.section(form)
   local hostname = uci:get_first("system", "system", "hostname")
   local addr = uci:get_first("gluon-node-info", 'location', "addr")
+  local city = uci:get_first("gluon-node-info", 'location', "city")
   local zip = uci:get_first("gluon-node-info", 'location', "zip")
   local mac = string.sub(util.node_id(), 9)
 
@@ -17,7 +18,8 @@ function M.section(form)
   hostname = hostname:gsub("^tst%-", "")
   hostname = hostname:gsub("^rhwd%-", "")
   hostname = hostname:gsub("^muer%-", "")
-  hostname = hostname:gsub("^" .. zip .. "%-", "")
+  #hostname = hostname:gsub("^" .. zip .. "%-", "")
+  hostname = hostname:gsub("^%d%d%d%d%d%-", "")
   hostname = hostname:gsub(" ","-")
   hostname = hostname:gsub("%p","-")
   hostname = hostname:gsub("_","-")
@@ -37,23 +39,29 @@ function M.section(form)
   o.datatype = "hostname"
 
   local mystrA = string.format("%s-%s", addr, mac)
+  local mystrB = string.format("%s-%s", city, mac)
+  local mystrC = string.format("freifunk-%s", util.node_id())
+  local hostnameEx = s:option(cbi.ListValue, "_defhostname", string.format("Namensbeispiele: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %s-", zip))
+  hostnameEx:value("input", hostname)
   if mystrA ~= hostname then
-    optstr=string.format("Namensbeispiel Adresse: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %s-", zip)
-    local o = s:option(cbi.DummyValue, "_defaulthostnameA", optstr)
-    o.value = mystrA
+    hostnameEx:value(mystrA, string.format("%s (Adresse)", mystrA))
   end
-  mac = util.node_id()
-  local mystrB = string.format("freifunk-%s", mac)
   if mystrB ~= hostname then
-    optstr=string.format("Namensbeispiel Ger&auml;tenummer: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %s-", zip)
-    local o = s:option(cbi.DummyValue, "_defaulthostnameB", optstr)
-    o.value = mystrB
+    hostnameEx:value(mystrB, string.format("%s (Ort)", mystrB))
+  end
+  if mystrC ~= hostname then
+    hostnameEx:value(mystrC, string.format("%s (Gerätekennung)", mystrC))
   end
 end
 
 function M.handle(data)
   local zip = uci:get_first("gluon-node-info", 'location', "zip")
-  local hostname = data._hostname
+  local hostname
+  if data._defhostname ~= "input" then
+      hostname = data._defhostname
+  else
+      hostname = data._hostname
+  end
   hostname = hostname:gsub(" ","-")
   hostname = hostname:gsub("%p","-")
   hostname = hostname:gsub("_","-")
