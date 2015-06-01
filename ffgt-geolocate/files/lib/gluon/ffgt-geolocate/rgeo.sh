@@ -45,9 +45,9 @@ if [ "X${curlat}" != "X" -a "X${curlon}" != "X" ]; then
    if [ $isconfigured -ne 1 ]; then
      if [ "x${zip}" != "x" -a "x${adr}" != "x" ]; then
       nodeid=`echo "util=require 'gluon.util' print(string.format('%s', string.sub(util.node_id(), 9)))" | /usr/bin/lua`
-      #suffix=`echo "util=require 'gluon.util' print(string.format('%s', string.sub(util.node_id(), 9)))" | /usr/bin/lua`
-      #hostname="${zip}-${adr}-${suffix}"
-      hostname="${zip}-freifunk-${nodeid}"
+      suffix=`echo "util=require 'gluon.util' print(string.format('%s', string.sub(util.node_id(), 9)))" | /usr/bin/lua`
+      hostname="${zip}-${adr}-${suffix}"
+      #hostname="${zip}-freifunk-${nodeid}"
       /sbin/uci set system.@system[0].hostname="${hostname}"
       /sbin/uci commit system
      fi
