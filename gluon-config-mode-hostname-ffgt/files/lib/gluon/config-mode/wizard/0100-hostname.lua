@@ -44,13 +44,13 @@ function M.section(form)
   local hostnameEx = s:option(cbi.ListValue, "_defhostname", string.format("Namensbeispiele: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %s-", zip))
   hostnameEx:value("input", hostname)
   if mystrA ~= hostname then
-    hostnameEx:value(mystrA, string.format("%s (Adresse)", mystrA))
+    hostnameEx:value(mystrA, string.format("%s", mystrA))
   end
   if mystrB ~= hostname then
-    hostnameEx:value(mystrB, string.format("%s (Ort)", mystrB))
+    hostnameEx:value(mystrB, string.format("%s", mystrB))
   end
   if mystrC ~= hostname then
-    hostnameEx:value(mystrC, string.format("%s (Gerätekennung)", mystrC))
+    hostnameEx:value(mystrC, string.format("%s", mystrC))
   end
 end
 
