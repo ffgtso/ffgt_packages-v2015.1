@@ -42,7 +42,7 @@ function M.section(form)
   local mystrB = string.format("%s-%s", city, mac)
   local mystrC = string.format("freifunk-%s", util.node_id())
   local hostnameEx = s:option(cbi.ListValue, "_defhostname", string.format("Namensbeispiele: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %s-", zip))
-  hostnameEx:value("input", hostname)
+  hostnameEx:value("input", "(Manuelle Eingabe oben)")
   if mystrA ~= hostname then
     hostnameEx:value(mystrA, string.format("%s", mystrA))
   end
