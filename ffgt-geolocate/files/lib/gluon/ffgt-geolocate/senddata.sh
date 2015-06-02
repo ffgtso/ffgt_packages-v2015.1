@@ -56,11 +56,11 @@ if [ ${runnow} -eq 1 ]; then
  mac=`/sbin/uci get network.bat0.macaddr`
  # Fuuuu... iw might not be there. If so, let's fake it.
  if [ -e /usr/sbin/iw ]; then
-  SCANIF="mesh0"
-  /usr/sbin/iw dev mesh1 info >/dev/null 2>&1
-  if [ $? -eq 0 ]; then
-   # Prefer 2.4 GHz, which usually is wlan1-X/mesh1
-   SCANIF="mesh1"
+  SCANIF="`/usr/sbin/iw dev | /usr/bin/awk 'BEGIN{idx=1;} /Interface / {iface[idx]=$2; ifacemap[$2]=idx; idx++}; END{if(ifacemap["mesh1"]>0) {printf("mesh1\n");} else if(ifacemap["wlan1"]>0) {printf("wlan1\n");} else if(ifacemap["mesh0"]>0) {printf("mesh0\n");} else if(ifacemap["wlan0"]>0) {printf("wlan0\n");} else {printf("%s\n", iface[idx-1]);}}'`"
+  /usr/sbin/iw ${SCANIF} scan 2>/dev/null >/dev/null
+  if [ $? -ne 0 ]; then
+   /sbin/ifconfig ${SCANIF} up
+   sleep 5
   fi
   /usr/bin/wget -q -O /dev/null "`/usr/sbin/iw dev ${SCANIF} scan | /usr/bin/awk -v mac=$mac -v ipv4prefix=$IPVXPREFIX -f /lib/gluon/ffgt-geolocate/preparse.awk`" && /bin/touch /tmp/run/wifi-data-sent
  else
