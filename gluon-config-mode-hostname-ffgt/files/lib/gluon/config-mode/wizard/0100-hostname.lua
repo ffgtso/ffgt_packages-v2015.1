@@ -1,6 +1,7 @@
 local cbi = require "luci.cbi"
 local uci = luci.model.uci.cursor()
 local util = require 'gluon.util'
+local fs = require "nixio.fs"
 
 local M = {}
 
@@ -26,10 +27,17 @@ function M.section(form)
   hostname = hostname:gsub("%-%-","-")
   hostname = hostname:sub(1, 30)
 
+  if fs.access("/tmp/hostname-changed-by-system") then
+    os.execute("/bin/rm -f /tmp/hostname-changed-by-system")
+    local s = form:section(cbi.SimpleSection, nil, [[<b>Hostname vom System angepa&szlig;t.</b>
+      Bitte &uuml;berpr&uuml;fe den Namen und passe ihn ggf. an, bitte beachte auch die folgenden
+      Hinweise.]])
+  end
+
   local s = form:section(cbi.SimpleSection, nil, [[Bitte gib' Deinem
   Knoten einen sprechenden Namen (z. B. Adresse, Bauwerk, Gesch&auml;ft).
   Es k&ouml;nnen nur Buchstaben, Zahlen und der Bindestrich verwendet
-  werden, jenseits 30 Zeichen wird abgeschnitten. Dem Namen wird die
+  werden, jenseits 37 Zeichen wird abgeschnitten. Dem Namen wird die
   PLZ des Aufstellstandortes vorangestellt, Prefixe sind also nicht
   notwendig.]])
   local optstr=string.format("Name dieses Knotens: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %s-", zip)
@@ -38,9 +46,9 @@ function M.section(form)
   o.rmempty = false
   o.datatype = "hostname"
 
-  local mystrA = string.format("%s-%s", addr, mac)
-  local mystrB = string.format("%s-%s", city, mac)
-  local mystrC = string.format("freifunk-%s", util.node_id())
+  local mystrA = string.sub(string.format("%s-%s", addr, mac), 37)
+  local mystrB = string.sub(string.format("%s-%s", city, mac), 37)
+  local mystrC = string.sub(string.format("freifunk-%s", util.node_id()), 37)
   local hostnameEx = s:option(cbi.ListValue, "_defhostname", string.format("Namensbeispiele: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %s-", zip))
   hostnameEx:value("input", "(Manuelle Eingabe oben)")
   -- if mystrA ~= hostname then
@@ -57,21 +65,27 @@ end
 function M.handle(data)
   local zip = uci:get_first("gluon-node-info", 'location', "zip")
   local hostname
+  local uihostname
   if data._defhostname ~= "input" then
       hostname = data._defhostname
   else
       hostname = data._hostname
   end
+  uihostname = hostname
   hostname = hostname:gsub(" ","-")
   hostname = hostname:gsub("%p","-")
   hostname = hostname:gsub("_","-")
   hostname = hostname:gsub("%-%-","-")
   hostname = zip .. "-" .. hostname
-  hostname = hostname:sub(1, 30)
+  hostname = hostname:sub(1, 42)
 
   uci:set("system", uci:get_first("system", "system"), "hostname", hostname)
   uci:save("system")
   uci:commit("system")
+  if hostname ~= uihostname then
+    os.execute("/bin/touch /tmp/hostname-changed-by-system")
+    luci.http.redirect(luci.dispatcher.build_url("gluon-config-mode/wizard"))
+  end
 end
 
 return M
