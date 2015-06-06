@@ -51,15 +51,15 @@ function M.section(form)
   local mystrC = string.sub(string.format("freifunk-%s", util.node_id()), 37)
   local hostnameEx = s:option(cbi.ListValue, "_defhostname", string.format("Namensbeispiele: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %s-", zip))
   hostnameEx:value("input", "(Manuelle Eingabe oben)")
-  -- if mystrA ~= hostname then
+  if mystrA ~= hostname then
     hostnameEx:value(mystrA, string.format("%s", mystrA))
-  -- end
-  -- if mystrB ~= hostname then
+  end
+  if mystrB ~= hostname then
     hostnameEx:value(mystrB, string.format("%s", mystrB))
-  -- end
-  -- if mystrC ~= hostname then
+  end
+  if mystrC ~= hostname then
     hostnameEx:value(mystrC, string.format("%s", mystrC))
-  -- end
+  end
 end
 
 function M.handle(data)
