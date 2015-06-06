@@ -71,7 +71,7 @@ function M.handle(data)
   else
       hostname = data._hostname
   end
-  uihostname = hostname
+  uihostname = zip .. "-" .. hostname
   hostname = hostname:gsub(" ","-")
   hostname = hostname:gsub("%p","-")
   hostname = hostname:gsub("_","-")
