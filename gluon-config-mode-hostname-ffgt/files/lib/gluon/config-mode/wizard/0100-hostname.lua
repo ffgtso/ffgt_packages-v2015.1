@@ -46,20 +46,21 @@ function M.section(form)
   o.rmempty = false
   o.datatype = "hostname"
 
-  local mystrA = string.sub(string.format("%s-%s", addr, mac), 37)
-  local mystrB = string.sub(string.format("%s-%s", city, mac), 37)
-  local mystrC = string.sub(string.format("freifunk-%s", util.node_id()), 37)
+  -- Limit to (37-strlen("00000-")), i. e. 31 chars
+  local mystrA = string.sub(string.format("%s-%s", addr, mac), 1, 31)
+  local mystrB = string.sub(string.format("%s-%s", city, mac), 1, 31)
+  local mystrC = string.sub(string.format("freifunk-%s", util.node_id()), 1, 31)
   local hostnameEx = s:option(cbi.ListValue, "_defhostname", string.format("Namensbeispiele: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; %s-", zip))
   hostnameEx:value("input", "(Manuelle Eingabe oben)")
-  if mystrA ~= hostname then
+  -- if mystrA ~= hostname then
     hostnameEx:value(mystrA, string.format("%s", mystrA))
-  end
-  if mystrB ~= hostname then
+  -- end
+  -- if mystrB ~= hostname then
     hostnameEx:value(mystrB, string.format("%s", mystrB))
-  end
-  if mystrC ~= hostname then
+  -- end
+  -- if mystrC ~= hostname then
     hostnameEx:value(mystrC, string.format("%s", mystrC))
-  end
+  -- end
 end
 
 function M.handle(data)
