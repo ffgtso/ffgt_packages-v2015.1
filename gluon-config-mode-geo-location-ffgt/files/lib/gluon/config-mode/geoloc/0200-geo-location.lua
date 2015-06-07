@@ -98,8 +98,8 @@ function M.handle(data)
       --if verifylocation() == 0 then
       --  luci.http.redirect(luci.dispatcher.build_url("gluon-config-mode/wizard-pre"))
       --end
-      lat = tonumber(sys.exec("uci get gluon-node-info.@location[0].latitude 2>/dev/null"))
-      lon = tonumber(sys.exec("uci get gluon-node-info.@location[0].longitude 2>/dev/null"))
+      lat = tonumber(sys.exec("uci get gluon-node-info.@location[0].latitude 2>/dev/null")) or 0
+      lon = tonumber(sys.exec("uci get gluon-node-info.@location[0].longitude 2>/dev/null")) or 0
       if ((lat == 0) or (lat == 51)) and ((lon == 0) or (lon == 9)) then
         luci.http.redirect(luci.dispatcher.build_url("gluon-config-mode/wizard-pre"))
       end
