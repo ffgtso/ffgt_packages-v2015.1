@@ -1,66 +1,78 @@
 local cbi = require "luci.cbi"
 local uci = luci.model.uci.cursor()
 local sys = luci.sys
+local fs = require "nixio.fs"
 
 local M = {}
 
 function M.section(form)
-  local s = form:section(cbi.SimpleSection, nil, [[]])
-  local sname = uci:get_first("gluon-node-info", "location")
-  local o
-  -- FIXME! The below doesn't work after returning from the executing the shell script changing
-  -- /etc/config/gluon-node-info (at least on x86-kvm). Thus we do it the hard way, reading the
-  -- actual file. LuCI really should stop caching shit :(
-  -- local lat = uci:get_first("gluon-node-info", sname, "latitude")
-  -- local lon = uci:get_first("gluon-node-info", sname, "longitude")
-  local lat = tonumber(sys.exec("uci get gluon-node-info.@location[0].latitude 2>/dev/null")) or 0
-  local lon = tonumber(sys.exec("uci get gluon-node-info.@location[0].longitude 2>/dev/null")) or 0
-  if not lat then lat=0 end
-  if not lon then lon=0 end
-  local maplat = lat
-  local maplon = lon
-  if ((lat == 0) or (lat == 51)) and ((lon == 0) or (lon == 9)) then
-    -- o = s:option(cbi.Value, "_zip", "Postleitzahl")
-    -- o.default = "33333"
-    -- o.rmempty = false
+  if fs.access("/tmp/is_online") then
+   local s = form:section(cbi.SimpleSection, nil, [[]])
+   local sname = uci:get_first("gluon-node-info", "location")
+   local o
+   -- FIXME! The below doesn't work after returning from the executing the shell script changing
+   -- /etc/config/gluon-node-info (at least on x86-kvm). Thus we do it the hard way, reading the
+   -- actual file. LuCI really should stop caching shit :(
+   -- local lat = uci:get_first("gluon-node-info", sname, "latitude")
+   -- local lon = uci:get_first("gluon-node-info", sname, "longitude")
+   local lat = tonumber(sys.exec("uci get gluon-node-info.@location[0].latitude 2>/dev/null")) or 0
+   local lon = tonumber(sys.exec("uci get gluon-node-info.@location[0].longitude 2>/dev/null")) or 0
+   if not lat then lat=0 end
+   if not lon then lon=0 end
+   local maplat = lat
+   local maplon = lon
+   if ((lat == 0) or (lat == 51)) and ((lon == 0) or (lon == 9)) then
+     -- o = s:option(cbi.Value, "_zip", "Postleitzahl")
+     -- o.default = "33333"
+     -- o.rmempty = false
 
-    maplat = "51.908624626589585"
-    maplon = "8.380953669548035"
-    lat=0
-    lon=0
-  end
-  -- At this point, lat/lon are numbers.
+     maplat = "51.908624626589585"
+     maplon = "8.380953669548035"
+     lat=0
+     lon=0
+   end
+   -- At this point, lat/lon are numbers.
 
-  o = s:option(cbi.Value, "_latitude", "Breitengrad")
-  if lat ~= 0 then
-    o.default = lat
-  end
-  o.rmempty = false
-  o.datatype = "float"
-  o.description = "z.B. 53.873621"
-  o.optional = false
+   o = s:option(cbi.Value, "_latitude", "Breitengrad")
+   if lat ~= 0 then
+     o.default = lat
+   end
+   o.rmempty = false
+   o.datatype = "float"
+   o.description = "z.B. 53.873621"
+   o.optional = false
 
-  o = s:option(cbi.Value, "_longitude", "Längengrad")
-  if lon ~= 0 then
-    o.default = lon
-  end
-  o.rmempty = false
-  o.datatype = "float"
-  o.description = "z.B. 10.689901"
-  o.optional = false
+   o = s:option(cbi.Value, "_longitude", "Längengrad")
+   if lon ~= 0 then
+     o.default = lon
+   end
+   o.rmempty = false
+   o.datatype = "float"
+   o.description = "z.B. 10.689901"
+   o.optional = false
 
-  local mystr
-  if lat == 0 and lon == 0 then
-    mystr = string.format("Hier sollte unsere &Uuml;bersichtskarte zu sehen sein, sofern Dein Computer Internet-Zugang hat. Einfach die Karte auf Deinen Standort ziehen, den Button zur Koordinatenanzeige klicken und dann die Daten in die Felder oben kopieren:<p><iframe src=\"http://map.4830.org/geomap.html\" width=\"100%%\" height=\"700\">Unsere Knotenkarte</iframe></p>")
+   local mystr
+   if lat == 0 and lon == 0 then
+     mystr = string.format("Hier sollte unsere &Uuml;bersichtskarte zu sehen sein, sofern Dein Computer Internet-Zugang hat. Einfach die Karte auf Deinen Standort ziehen, den Button zur Koordinatenanzeige klicken und dann die Daten in die Felder oben kopieren:<p><iframe src=\"http://map.4830.org/geomap.html\" width=\"100%%\" height=\"700\">Unsere Knotenkarte</iframe></p>")
+   else
+     mystr = string.format("Hier sollte unsere Karte zu sehen sein, sofern Dein Computer Internet-Zugang hat. Einfach die Karte auf Deinen Standort ziehen, den Button zur Koordinatenanzeige klicken und dann die Daten in die Felder oben kopieren:<p><iframe src=\"http://map.4830.org/geomap.html#lat=%f&amp;lon=%f\" width=\"100%%\" height=\"700\">Unsere Knotenkarte</iframe></p>", lat, lon)
+   end
+   local s = form:section(cbi.SimpleSection, nil, mystr)
   else
-    mystr = string.format("Hier sollte unsere Karte zu sehen sein, sofern Dein Computer Internet-Zugang hat. Einfach die Karte auf Deinen Standort ziehen, den Button zur Koordinatenanzeige klicken und dann die Daten in die Felder oben kopieren:<p><iframe src=\"http://map.4830.org/geomap.html#lat=%f&amp;lon=%f\" width=\"100%%\" height=\"700\">Unsere Knotenkarte</iframe></p>", lat, lon)
+    local s = form:section(cbi.SimpleSection, nil, [[<b>Keine Internetverbindung!</b>
+       Bitte schlie&szlig;e den Knoten &uuml;ber die <i>gelben</i> Ports an Deinen
+       Internetzugang an, damit die Konfiguration korrekt vorgenommen werden kann.]])
   end
-  local s = form:section(cbi.SimpleSection, nil, mystr)
 end
 
 function M.handle(data)
   function trim(s)
     return s:match "^%s*(.-)%s*$"
+  end
+
+  if not fs.access("/tmp/is_online") then
+      os.execute('/lib/gluon/config-mode/check4online.sh')
+      luci.http.redirect(luci.dispatcher.build_url("gluon-config-mode/wizard-pre"))
   end
 
   local sname = uci:get_first("gluon-node-info", "location")
