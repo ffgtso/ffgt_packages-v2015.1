@@ -6,6 +6,7 @@ local fs = require "nixio.fs"
 local M = {}
 
 function M.section(form)
+  os.execute('/lib/gluon/config-mode/check4online.sh')
   if fs.access("/tmp/is_online") then
    local s = form:section(cbi.SimpleSection, nil, [[]])
    local sname = uci:get_first("gluon-node-info", "location")
@@ -72,6 +73,8 @@ function M.handle(data)
 
   if not fs.access("/tmp/is_online") then
       os.execute('/lib/gluon/config-mode/check4online.sh')
+  end
+  if not fs.access("/tmp/is_online") then
       luci.http.redirect(luci.dispatcher.build_url("gluon-config-mode/wizard-pre"))
   end
 
