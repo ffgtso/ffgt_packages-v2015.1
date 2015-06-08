@@ -90,7 +90,7 @@ function M.handle(data)
       uci:set("gluon-node-info", sname, "longitude", data._longitude)
       uci:save("gluon-node-info")
       uci:commit("gluon-node-info")
-      os.execute('sh "/lib/gluon/ffgt-geolocate/rgeo.sh"')
+      os.execute('/lib/gluon/ffgt-geolocate/rgeo.sh')
       -- Hrmpft. This isn't working due to broken caching. Fsck you, LuCI!
       --local ucinew = luci.model.uci.cursor()
       --local lat = ucinew:get_first("gluon-node-info", sname, "latitude")
@@ -104,6 +104,10 @@ function M.handle(data)
       lon = tonumber(sys.exec("uci get gluon-node-info.@location[0].longitude 2>/dev/null")) or 0
       if ((lat == 0) or (lat == 51)) and ((lon == 0) or (lon == 9)) then
         luci.http.redirect(luci.dispatcher.build_url("gluon-config-mode/wizard-pre"))
+      end
+      local unlocode = sys.exec("uci get gluon-node-info.@location[0].locode 2>/dev/null")
+      if not unlocode then
+         luci.http.redirect(luci.dispatcher.build_url("gluon-config-mode/wizard-pre"))
       end
     end
   end
