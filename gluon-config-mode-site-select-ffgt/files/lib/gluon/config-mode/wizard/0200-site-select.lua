@@ -49,16 +49,16 @@ function M.section(form)
 	    for index, site in ipairs(sites) do
 	    	o:value(site, uci:get('siteselect', site, 'sitename'))
         end
-    else
-        local unlocode = uci:get_first("gluon-node-info", "location", "locode")
-        local s = form:section(cbi.SimpleSection, nil, [[Geo-Lokalisierung erfolgreich.]])
-        local o = s:option(cbi.DummyValue, "community", "Community-Code")
-    	o.rmempty = false
-        o.optional = false
-        o.value = unlocode
-        -- FIXME! Why isn't this working below? It works with cbi.Value or cbi.ListValue, but with cbi.DummyValue I get:
-        -- /lib/gluon/config-mode/wizard//0200-site-select.lua:66: bad argument #2 to 'get' (string expected, got nil)
-        -- (with line 66: local secret = uci:get_first('siteselect', data.community, 'secret'))
+--    else
+--        local unlocode = uci:get_first("gluon-node-info", "location", "locode")
+--        local s = form:section(cbi.SimpleSection, nil, [[Geo-Lokalisierung erfolgreich.]])
+--        local o = s:option(cbi.DummyValue, "community", "Community-Code")
+--    	  o.rmempty = false
+--        o.optional = false
+--        o.value = unlocode
+--        -- FIXME! Why isn't this working below? It works with cbi.Value or cbi.ListValue, but with cbi.DummyValue I get:
+--        -- /lib/gluon/config-mode/wizard//0200-site-select.lua:66: bad argument #2 to 'get' (string expected, got nil)
+--        -- (with line 66: local secret = uci:get_first('siteselect', data.community, 'secret'))
     end
 end
 
