@@ -83,6 +83,16 @@ function M.handle(data)
     data._longitude=trim(data._longitude)
     local lat = tonumber(sys.exec("uci get gluon-node-info.@location[0].latitude 2>/dev/null")) or 0
     local lon = tonumber(sys.exec("uci get gluon-node-info.@location[0].longitude 2>/dev/null")) or 0
+    local unlocode = sys.exec("uci get gluon-node-info.@location[0].locode 2>/dev/null")
+    if unlocode then
+      unlocode = string.gsub(unlocode, "\n", "")
+    else
+      os.execute('/lib/gluon/ffgt-geolocate/rgeo.sh')
+      unlocode = sys.exec("uci get gluon-node-info.@location[0].locode 2>/dev/null")
+      if not unlocode then
+        luci.http.redirect(luci.dispatcher.build_url("gluon-config-mode/wizard-pre"))
+      end
+    end
     local newlat = tonumber(data._latitude) or 51
     local newlon = tonumber(data._longitude) or 9
     if lat ~= newlat or lon ~= newlon then
@@ -104,10 +114,6 @@ function M.handle(data)
       lon = tonumber(sys.exec("uci get gluon-node-info.@location[0].longitude 2>/dev/null")) or 0
       if ((lat == 0) or (lat == 51)) and ((lon == 0) or (lon == 9)) then
         luci.http.redirect(luci.dispatcher.build_url("gluon-config-mode/wizard-pre"))
-      end
-      local unlocode = sys.exec("uci get gluon-node-info.@location[0].locode 2>/dev/null")
-      if not unlocode then
-         luci.http.redirect(luci.dispatcher.build_url("gluon-config-mode/wizard-pre"))
       end
     end
   end
