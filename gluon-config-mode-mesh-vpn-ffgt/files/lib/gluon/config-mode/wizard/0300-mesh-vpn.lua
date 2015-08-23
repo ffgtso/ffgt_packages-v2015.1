@@ -56,7 +56,7 @@ function M.handle(data)
     end
 
     if data._limit_ingress ~= nil and data._limit_egress ~= nil and data._limit_egress + 0 > 0 and data._limit_ingress + 0 > 0 then
-      uci:set("gluon-simple-tc", mesh_vpn, "enabled", "1")
+      uci:set("gluon-simple-tc", "mesh_vpn", "enabled", "1")
     end
 
     uci:commit("gluon-simple-tc")
