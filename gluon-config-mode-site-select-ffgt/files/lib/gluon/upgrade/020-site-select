@@ -31,11 +31,19 @@ if not fs.access("/tmp/site-upgrade.lock") then
     end
     os.execute(string.format("/sbin/uci set gluon-node-info.@location[0].siteselect=%c%s%c 2>/dev/null", 39, newcommunity, 39))
     os.execute(string.format("/sbin/uci commit gluon-node-info 2>/dev/null"))
+  else
+    -- Copy the proper new site.conf of the new community in place.
+    os.execute("echo 'Updating system-wide site.conf'")
+    local cmdline=string.format('/sbin/uci get siteselect.%s.path', newcommunity)
+    local srcfile=string.gsub(sys.exec(cmdline), "\n", "")
+    -- os.execute(string.format("echo src=%s com=%s", srcfile, newcommunity))
+    os.execute(string.format("/bin/cp %s /lib/gluon/site.conf", srcfile))
+    os.execute('sh "/lib/gluon/site-upgrade"')
   end
 
-  local locode=sys.exec("uci get gluon-node-info.@location[0].locode 2>/dev/null")
-  if not locode then
-    os.execute("echo 'Upgrading from legacy FW, part 2.'")
+  local locode=string.gsub(sys.exec("uci get gluon-node-info.@location[0].locode 2>/dev/null"), "\n", "") or ''
+  if string.len(locode) == 0 then
+    os.execute("echo 'Upgrading from legacy FW, second try.'")
     -- Upgrade from non-site-select firmware: try geolocate if needed, try rgeo, use gto as last resort.
     lat = tonumber(sys.exec("uci get gluon-node-info.@location[0].latitude 2>/dev/null")) or 0
     lon = tonumber(sys.exec("uci get gluon-node-info.@location[0].longitude 2>/dev/null")) or 0
@@ -54,10 +62,8 @@ if not fs.access("/tmp/site-upgrade.lock") then
     end
     os.execute(string.format("/sbin/uci set gluon-node-info.@location[0].siteselect=%c%s%c 2>/dev/null", 39, newcommunity, 39))
     os.execute(string.format("/sbin/uci commit gluon-node-info 2>/dev/null"))
-  end
 
-  local curcommunity=site.site_selectcode or 'none'
-  if newcommunity ~= curcommunity then
+    -- Copy the proper according to loc site.conf in place.
     os.execute("echo 'Updating system-wide site.conf'")
     local cmdline=string.format('/sbin/uci get siteselect.%s.path', newcommunity)
     local srcfile=string.gsub(sys.exec(cmdline), "\n", "")
@@ -65,5 +71,6 @@ if not fs.access("/tmp/site-upgrade.lock") then
     os.execute(string.format("/bin/cp %s /lib/gluon/site.conf", srcfile))
     os.execute('sh "/lib/gluon/site-upgrade"')
   end
+
   os.execute('/bin/rm -f /tmp/site-upgrade.lock')
 end
