@@ -12,9 +12,9 @@ function M.section(form)
 
   local o
 
---  o = s:option(cbi.Flag, "_meshvpn", "Internetverbindung nutzen (Mesh-VPN)")
---  o.default = uci:get_bool("fastd", "mesh_vpn", "enabled") and o.enabled or o.disabled
---  o.rmempty = false
+  o = s:option(cbi.Flag, "_meshvpn", "Internetverbindung nutzen (Mesh-VPN)")
+  o.default = uci:get_bool("fastd", "mesh_vpn", "enabled") and o.enabled or o.disabled
+  o.rmempty = false
 
 --  o = s:option(cbi.Flag, "_limit_enabled", "Zu teilende Bandbreite begrenzen")
 --  o:depends("_meshvpn", "1")
@@ -23,23 +23,23 @@ function M.section(form)
 
   o = s:option(cbi.Value, "_limit_ingress", "Downstream (kbit/s)")
 --  o:depends("_limit_enabled", "1")
---  o.value = uci:get("gluon-simple-tc", "mesh_vpn", "limit_ingress")
-  o.value = "0"
+  o.value = uci:get("gluon-simple-tc", "mesh_vpn", "limit_ingress") or 0
+--  o.value = "0"
   o.rmempty = false
   o.datatype = "integer"
 
   o = s:option(cbi.Value, "_limit_egress", "Upstream (kbit/s)")
 --  o:depends("_limit_enabled", "1")
---  o.value = uci:get("gluon-simple-tc", "mesh_vpn", "limit_egress")
-  o.value = "0"
+  o.value = uci:get("gluon-simple-tc", "mesh_vpn", "limit_egress") or 0
+--  o.value = "0"
   o.rmempty = false
   o.datatype = "integer"
 end
 
 function M.handle(data)
---  uci:set("fastd", "mesh_vpn", "enabled", data._meshvpn)
---  uci:save("fastd")
---  uci:commit("fastd")
+  uci:set("fastd", "mesh_vpn", "enabled", data._meshvpn)
+  uci:save("fastd")
+  uci:commit("fastd")
 
   -- checks for nil needed due to o:depends(...)
 --  if data._limit_enabled ~= nil then
@@ -57,13 +57,15 @@ function M.handle(data)
 
     if data._limit_ingress ~= nil and data._limit_egress ~= nil and data._limit_egress + 0 > 0 and data._limit_ingress + 0 > 0 then
       uci:set("gluon-simple-tc", "mesh_vpn", "enabled", "1")
+    else
+      uci:set("gluon-simple-tc", "mesh_vpn", "enabled", "0")
     end
 
     uci:commit("gluon-simple-tc")
 
-    uci:set("fastd", "mesh_vpn", "enabled", "1")
-    uci:save("fastd")
-    uci:commit("fastd")
+    -- uci:set("fastd", "mesh_vpn", "enabled", "1")
+    -- uci:save("fastd")
+    -- uci:commit("fastd")
 --  end
 end
 

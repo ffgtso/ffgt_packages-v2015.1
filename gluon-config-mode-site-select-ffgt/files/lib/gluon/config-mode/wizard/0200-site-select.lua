@@ -145,7 +145,9 @@ function M.handle(data)
         sys.exec(string.format("/sbin/uci commit gluon-node-info 2>/dev/null"))
 
         fs.copy(uci:get('siteselect', unlocode, 'path'), '/lib/gluon/site.conf')
-        os.execute('sh "/lib/gluon/site-upgrade"')
+        -- os.execute("/bin/touch /tmp/need-to-run-site-upgrade")
+        -- os.execute('sh "/lib/gluon/site-upgrade"')
+        os.execute('/lib/gluon/upgrade/400-mesh-vpn-fastd')
     end
 end
 
