@@ -1,3 +1,4 @@
+local site = require 'gluon.site_config'
 local ssid = uci:get_first('wireless', 'client_radio1', 'ssid', '')
 
 if ssid == '' then
@@ -5,7 +6,11 @@ if ssid == '' then
 end
 
 if ssid == '' then
-  ssid = 'n/a'
+  ssid = site.wifi24.ssid
+end
+
+if ssid == '' then
+  ssid = "n/a"
 end
 
 return ssid
