@@ -148,6 +148,7 @@ function M.handle(data)
         -- os.execute("/bin/touch /tmp/need-to-run-site-upgrade")
         -- os.execute('sh "/lib/gluon/site-upgrade"')
         os.execute('/lib/gluon/upgrade/400-mesh-vpn-fastd')
+        os.execute('/lib/gluon/upgrade/320-gluon-mesh-batman-adv-core-wireless')
     end
 end
 
