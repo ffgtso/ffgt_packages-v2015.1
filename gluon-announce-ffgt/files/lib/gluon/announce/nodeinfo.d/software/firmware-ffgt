@@ -1,0 +1,10 @@
+local locode = uci:get_first('gluon-node-info', 'location', 'locode', '')
+
+if locode == '' then
+ locode = "ERR"
+end
+
+return {
+ base = 'gluon-gt-' .. util.trim(fs.readfile('/lib/gluon/gluon-version')),
+ release = util.trim(fs.readfile('/lib/gluon/release')) .. "_" .. locode,
+}
