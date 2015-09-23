@@ -27,7 +27,6 @@ endef
 
 define Package/gluon-announce-ffgt/install
 	$(CP) ./files/* $(1)/
-	$(MV) $(1)/lib/gluon/announce/nodeinfo.d/software/firmware-ffgt $(1)/lib/gluon/announce/nodeinfo.d/software/firmware
 endef
 
 $(eval $(call BuildPackage,gluon-announce-ffgt))
