@@ -11,7 +11,7 @@ include $(INCLUDE_DIR)/package.mk
 define Package/gluon-config-mode-site-select-ffgt
   SECTION:=gluon
   CATEGORY:=Gluon
-  TITLE:=UI for changing the node-config
+  TITLE:=Package for (automatic) selection of a site.conf file
   DEPENDS:=+ffgt-geolocate
 endef
 
