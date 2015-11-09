@@ -2,7 +2,7 @@
 
 echo "" > "$DIR"/etc/config/siteselect
 
-dir -1 "$GLUON_SITEDIR"/extra/ | while read FILE
+/bin/ls -1 "$GLUON_SITEDIR"/extra/ | while read FILE
 do
 site_name="$(cat "$GLUON_SITEDIR"/extra/"$FILE" | grep "site_name" | sed "s/site_name =//; s/,//")"
 #site_code="$(cat "$GLUON_SITEDIR"/extra/"$FILE" | grep "site_code" | sed "s/site_code =//; s/,//")"
