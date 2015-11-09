@@ -29,8 +29,6 @@ define Package/gluon-config-mode-site-select-ffgt/install
 	mkdir -p $(1)/etc/config/
 	mkdir -p $(1)/lib/gluon/site-select/
 	$(CP) ./files/* $(1)/
-	$(CP) ./extra/* $(1)/lib/gluon/site-select/
-	DIR=$(1) sh create-config.sh
 endef
 
 $(eval $(call BuildPackage,gluon-config-mode-site-select-ffgt))
