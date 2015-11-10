@@ -20,7 +20,7 @@ function M.section(form)
   local o
   -- FIXME! The below doesn't work after returning from the executing the shell script changing
   -- /etc/config/gluon-node-info (at least on x86-kvm). Thus we do it the hard way, reading the
-  -- actual file. LuCI really should stop caching shit :(
+  -- actual file. LuCI really should stop caching shit -- or /me pointed to a proper LuCI tutorial :(
   -- local lat = uci:get_first("gluon-node-info", sname, "latitude")
   -- local lon = uci:get_first("gluon-node-info", sname, "longitude")
   local lat = tonumber(sys.exec("uci get gluon-node-info.@location[0].latitude 2>/dev/null")) or 0
@@ -61,9 +61,9 @@ function M.section(form)
 
   local mystr
   if lat == 0 and lon == 0 then
-    mystr = string.format("Hier sollte unsere &Uuml;bersichtskarte zu sehen sein, sofern Dein Computer Internet-Zugang hat. Einfach die Karte auf Deinen Standort ziehen, den Button zur Koordinatenanzeige klicken und dann die Daten in die Felder oben kopieren:<p><iframe src=\"http://map.4830.org/geomap.html\" width=\"100%%\" height=\"700\">Unsere Knotenkarte</iframe></p>")
+    mystr = string.format("Hier sollte unsere &Uuml;bersichtskarte zu sehen sein, sofern Dein Computer Internet-Zugang hat. Einfach die Karte auf Deinen Standort ziehen/zoomen, den Button zur Koordinatenanzeige klicken und nach dem Klick in die Karte dann die Daten in die Felder oben kopieren:<p><iframe src=\"http://map.4830.org/geomap.html\" width=\"100%%\" height=\"700\">Unsere Knotenkarte</iframe></p>")
   else
-    mystr = string.format("Hier sollte unsere Karte zu sehen sein, sofern Dein Computer Internet-Zugang hat. Einfach die Karte auf Deinen Standort ziehen, den Button zur Koordinatenanzeige klicken und dann die Daten in die Felder oben kopieren:<p><iframe src=\"http://map.4830.org/geomap.html#lat=%f&amp;lon=%f\" width=\"100%%\" height=\"700\">Unsere Knotenkarte</iframe></p>", lat, lon)
+    mystr = string.format("Hier sollte unsere Karte zu sehen sein, sofern Dein Computer Internet-Zugang hat. Einfach die Karte auf Deinen Standort ziehen/zoomen, den Button zur Koordinatenanzeige klicken und nach dem Klick in die Karte dann die Daten in die Felder oben kopieren:<p><iframe src=\"http://map.4830.org/geomap.html#lat=%f&amp;lon=%f\" width=\"100%%\" height=\"700\">Unsere Knotenkarte</iframe></p>", lat, lon)
   end
   local s = form:section(cbi.SimpleSection, nil, mystr)
 end
