@@ -1,0 +1,18 @@
+local stats_bin = '/usr/bin/fastd-status'
+local stats_socket = '/var/run/fastd.mesh_vpn.socket'
+local stats_io = io.popen(stats_bin .. " " .. stats_socket)
+local stats_json = stats_io:read("*a")
+stats_io:close()                                                        
+local stats = string.match(stats_json, 'statistics.-rx.-packets.- %d+, .-bytes.- %d+ .-rx_reordered.-packets.- %d+, .-bytes.- %d+ .-tx.-packets.- %d+, .bytes.: %d+')
+local stats_rx_text = string.match(stats, 'rx.. .- %d+ }')
+local stats_rx_packets = string.match(stats_rx_text, '.-%d+')
+local stats_rx_packets = tonumber(string.match(stats_rx_packets, '%d+'))
+local stats_rx_bytes = string.match(stats_rx_text, '.+%d+')
+local stats_rx_bytes = tonumber(string.match(stats_rx_bytes, '%d+$'))
+local stats_tx_text = string.match(stats, 'tx.. .+ %d+')
+local stats_tx_packets = string.match(stats_tx_text, '.-%d+')
+local stats_tx_packets = tonumber(string.match(stats_tx_packets, '%d+'))
+local stats_tx_bytes = string.match(stats_tx_text, '.+%d+')
+local stats_tx_bytes = tonumber(string.match(stats_tx_bytes, '%d+$'))
+
+return { rx_bytes = stats_rx_bytes, rx_packets = stats_rx_packets, tx_bytes = stats_tx_bytes, tx_packets = stats_tx_packets }
