@@ -1,0 +1,47 @@
+#!/usr/bin/lua
+
+local uci = require 'luci.model.uci'.cursor()
+local util = require 'gluon.util'
+local fs = require('nixio.fs')
+
+local enabled = uci:get('autoupdater','settings','enabled')
+if uci:get('autoupdater-wifi-fallback', 'settings') then
+  enabled = uci:get_bool('autoupdater-wifi-fallback', 'settings', 'enabled') and 1 or 0
+  uci:delete('autoupdater-wifi-fallback', 'settings')
+end
+
+uci:section('autoupdater-wifi-fallback','autoupdater-wifi-fallback','settings',
+  {
+    enabled = enabled,
+  }
+)
+
+uci:delete('wireless', 'fallback')
+
+uci:delete('network','fallback')
+uci:section('network', 'interface', 'fallback',
+  {
+    proto = 'dhcpv6',
+    peerdns = 1,
+    sourcefilter = 0,
+  }
+)
+
+uci:save('autoupdater-wifi-fallback')
+uci:save('network')
+uci:save('wireless')
+
+-- This is v2016.1 ...
+-- local minute = tonumber(fs.readfile('/usr/lib/micron.d/autoupdater'):match('^([0-9][0-9]?)%s'))
+-- minute = (minute + 10) % 60
+--
+-- local f = io.open('/usr/lib/micron.d/autoupdater-wifi-fallback', 'w')
+-- f:write(string.format('%i * * * * /usr/sbin/autoupdater-wifi-fallback\n', minute))
+-- f:close()
+
+-- Using v2015.1.x way ...
+minute = math.random(0, 59)
+
+local f = io.open('/lib/gluon/cron/autoupdater-wifi-fallback', 'w')
+f:write(string.format('%i * * * * /usr/sbin/autoupdater-wifi-fallback\n', minute))
+f:close()
