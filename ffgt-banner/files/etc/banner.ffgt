@@ -15,3 +15,6 @@
 
   Tools:
   - autoupdater -f    (Firmware-Update erzwingen)
+  - batctl gwl        (Informationen zu batman-adv-Gateways anzeigen)
+  - batctl o | wc -l  (Anzahl 'orginators' (Knoten) im Netz anzeigen)
+  - batctl tg | wc -l (Anzahl aller Geräte im Netz anzeigen)
