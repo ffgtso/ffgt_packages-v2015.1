@@ -20,14 +20,14 @@ endef
 
 define Build/Prepare
 	mkdir -p $(PKG_BUILD_DIR)
-	$(CP) ./src/* $(PKG_BUILD_DIR)/
+	# $(CP) ./src/* $(PKG_BUILD_DIR)/
 endef
 
 define Package/ffho-autoupdater-wifi-fallback/install
 	$(CP) ./files/* $(1)/
 
-	$(INSTALL_DIR) $(1)/lib/gluon/respondd
-	$(CP) $(PKG_BUILD_DIR)/respondd.so $(1)/lib/gluon/respondd/autoupdater-wifi-fallback.so
+	# $(INSTALL_DIR) $(1)/lib/gluon/respondd
+	# $(CP) $(PKG_BUILD_DIR)/respondd.so $(1)/lib/gluon/respondd/autoupdater-wifi-fallback.so
 endef
 
 $(eval $(call BuildPackage,ffho-autoupdater-wifi-fallback))
