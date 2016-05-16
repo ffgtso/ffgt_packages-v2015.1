@@ -30,7 +30,7 @@ fi
 
 if [ $GATEWAY_TQ -gt $UPPER_LIMIT ];
 then
-	echo "Gateway TQ is $GATEWAY_TQ node is online"
+	echo "Gateway TQ is $GATEWAY_TQ, node is online"
 	for HOSTAPD in $(ls /var/run/hostapd-phy*); do #Check status for all physical devices
 		CURRENT_SSID=`grep "^ssid=$ONLINE_SSID" $HOSTAPD | cut -d"=" -f2`
 		if [ $CURRENT_SSID == $ONLINE_SSID ]
@@ -53,7 +53,7 @@ fi
 
 if [ $GATEWAY_TQ -lt $LOWER_LIMIT ];
 then
-	echo "Gateway TQ is $GATEWAY_TQ node is considered offline"
+	echo "Gateway TQ is $GATEWAY_TQ, node is considered offline"
 	for HOSTAPD in $(ls /var/run/hostapd-phy*); do #Check status for all physical devices
 		CURRENT_SSID=`grep "^ssid=$OFFLINE_SSID" $HOSTAPD | cut -d"=" -f2`
 		if [ $CURRENT_SSID == $OFFLINE_SSID ]
