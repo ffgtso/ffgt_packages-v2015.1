@@ -27,7 +27,7 @@ if not fs.access("/tmp/site-upgrade.lock") then
     end
     newcommunity = string.gsub(sys.exec("uci get gluon-node-info.@location[0].locode 2>/dev/null"), "\n", "") or ''
     if string.len(newcommunity) == 0 then
-      newcommunity = "gto"
+      newcommunity = "zzz"
     end
     os.execute(string.format("/sbin/uci set gluon-node-info.@location[0].siteselect=%c%s%c 2>/dev/null", 39, newcommunity, 39))
     os.execute(string.format("/sbin/uci commit gluon-node-info 2>/dev/null"))
@@ -58,7 +58,7 @@ if not fs.access("/tmp/site-upgrade.lock") then
     end
     newcommunity = string.gsub(sys.exec("uci get gluon-node-info.@location[0].locode 2>/dev/null"), "\n", "") or ''
     if string.len(newcommunity) == 0 then
-      newcommunity = "gto"
+      newcommunity = "zzz"
     end
     os.execute(string.format("/sbin/uci set gluon-node-info.@location[0].siteselect=%c%s%c 2>/dev/null", 39, newcommunity, 39))
     os.execute(string.format("/sbin/uci commit gluon-node-info 2>/dev/null"))
