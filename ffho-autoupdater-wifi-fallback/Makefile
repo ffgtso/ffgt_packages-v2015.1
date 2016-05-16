@@ -23,6 +23,12 @@ define Build/Prepare
 	# $(CP) ./src/* $(PKG_BUILD_DIR)/
 endef
 
+define Build/Configure
+endef
+
+define Build/Compile
+endef
+
 define Package/ffho-autoupdater-wifi-fallback/install
 	$(CP) ./files/* $(1)/
 
