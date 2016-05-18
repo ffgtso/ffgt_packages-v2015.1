@@ -1,2 +1,2 @@
-#config autoupdater-wifi-fallback settings
-#	option enabled 1
+config autoupdater-wifi-fallback settings
+	option enabled '1'
