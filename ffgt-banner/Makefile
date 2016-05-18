@@ -49,6 +49,9 @@ define Package/ffgt-banner/postinst
 cd "$${IPKG_INSTROOT}/etc/"
 [ -h "./banner" ] && /bin/rm -f "./banner"
 /bin/ln -s "./banner.ffgt" "./banner"
+echo "" >> "./banner.ffgt"
+echo "OpenWRT-Basis: `grep ", r" ./banner.openwrt`"
+rm ./banner.openwrt
 exit $$?
 endef
 
