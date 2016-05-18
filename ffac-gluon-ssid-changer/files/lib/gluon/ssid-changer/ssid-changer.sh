@@ -10,15 +10,18 @@ UPPER_LIMIT='55' #Above this limit the online SSID will be used
 LOWER_LIMIT='45' #Below this limit the offline SSID will be used
 # In-between these two values the SSID will never be changed to preven it from toggeling every Minute.
 
-# Generate an Offline SSID with the first and last Part of the nodename to allow owner to recognise wich node is down
-NODENAME=`uname -n`
-if [ ${#NODENAME} -gt $((30 - ${#OFFLINE_PREFIX})) ] ; then #32 would be possible as well
-	HALF=$(( (28 - ${#OFFLINE_PREFIX} ) / 2 )) #calculate the length of the first part of the node identifier in the offline-ssid
-	SKIP=$(( ${#NODENAME} - $HALF )) #jump to this charakter for the last part of the name
-	OFFLINE_SSID=$OFFLINE_PREFIX${NODENAME:0:$HALF}...${NODENAME:$SKIP:${#NODENAME}} # use the first and last part of the nodename for nodes with long name
-else
-	OFFLINE_SSID="$OFFLINE_PREFIX$NODENAME" #greate we are able to use the full nodename in the offline ssid
-fi
+## Generate an Offline SSID with the first and last Part of the nodename to allow owner to recognise wich node is down
+#NODENAME=`uname -n`
+#if [ ${#NODENAME} -gt $((30 - ${#OFFLINE_PREFIX})) ] ; then #32 would be possible as well
+#	HALF=$(( (28 - ${#OFFLINE_PREFIX} ) / 2 )) #calculate the length of the first part of the node identifier in the offline-ssid
+#	SKIP=$(( ${#NODENAME} - $HALF )) #jump to this charakter for the last part of the name
+#	OFFLINE_SSID=$OFFLINE_PREFIX${NODENAME:0:$HALF}...${NODENAME:$SKIP:${#NODENAME}} # use the first and last part of the nodename for nodes with long name
+#else
+#	OFFLINE_SSID="$OFFLINE_PREFIX$NODENAME" #greate we are able to use the full nodename in the offline ssid
+#fi
+
+# Offline-SSID is just Prefix+PrimaryMAC
+OFFLINE_SSID="${OFFLINE_PREFIX}`/bin/cat /lib/gluon/core/sysconfig/primary_mac | sed -e 's/://g'`"
 
 #Is there an active Gateway?
 GATEWAY_TQ=`batctl gwl | grep "^=>" | awk -F'[()]' '{print $2}'| tr -d " "` #Grep the Connection Quality of the Gateway which is currently used
