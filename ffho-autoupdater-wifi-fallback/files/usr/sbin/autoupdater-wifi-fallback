@@ -35,15 +35,19 @@ end
 
 local function preflight_check()
   if not uci:get_bool(configname,'settings','enabled') then
+    io.popen('logger -s -t autoupdater-wifi-fallback -p local0.info "fallback disabled by config"')
     return false
   end
   if not uci:get_bool('autoupdater','settings','enabled') then
+    io.popen('logger -s -t autoupdater-wifi-fallback -p local0.info "autoupdate disabled by config"')
     return false
   end
   if tonumber(fs.readfile('/proc/uptime'):match('^([^ ]+) ')) < min_uptime_secs then
+    io.popen('logger -s -t autoupdater-wifi-fallback -p local0.info "too early, minimum uptime not reached"')
     return false
   end
 
+  io.popen('logger -s -t autoupdater-wifi-fallback -p local0.info "preflight check successful"')
   return true
 end
 
@@ -135,6 +139,8 @@ if (force or preflight_check()) and not connectivity_check() then
       -- this is only reached if no updated happened
       revert_to_standard_mode()
     end
+  else
+    io.popen('logger -s -t autoupdater-wifi-fallback -p local0.info "Need to be offline for at least " .. offset .. " seconds."')
   end
 else
   uci:delete(configname, 'settings','unreachable_since')
