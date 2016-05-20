@@ -10,4 +10,4 @@ fi
 
 
 grep "^  OS: " /etc/banner >/dev/null || echo -e "OS: `grep ', r' /etc/banner.openwrt | sed -e 's/.*(\(.*\)).*$/\1/'`\nHW: `cat /tmp/banner`" | \
- awk 'BEGIN{l=0} {line[l++]=$0;} END{printf("\n  %-36s    %-38s\n", line[0], line[1]);}' >>/etc/banner
+ awk 'BEGIN{l=0} {line[l++]=$0;} END{printf("\n  %-36.36s    %-38.38s\n", line[0], line[1]);}' >>/etc/banner
