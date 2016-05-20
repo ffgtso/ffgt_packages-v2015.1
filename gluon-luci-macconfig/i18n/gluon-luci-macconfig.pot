@@ -2,7 +2,7 @@ msgid ""
 msgstr "Content-Type: text/plain; charset=UTF-8"
 
 msgid "WAN MAC needs white-listing"
-msgstr "WAN-MAC mu&szlig; freigeschaltet werden"
+msgstr ""
 
 msgid "Automatic (RA/DHCPv6)"
 msgstr ""

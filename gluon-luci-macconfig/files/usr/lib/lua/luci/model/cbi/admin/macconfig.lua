@@ -33,7 +33,7 @@ s = f:section(SimpleSection, nil, [[Falls die WAN-MAC-Adresse
   zu &auml;ndern.]])
 
 
-o = s:option(cbi.Flag, "static_mac", translate("WAN MAC needs white-listing"))
+o = s:option(Flag, "static_mac", translate("WAN MAC needs white-listing"))
 o.default = uci:get_bool("gluon-node-info", "system", "wan_mac_static") and o.enabled or o.disabled
 o.rmempty = false
 
