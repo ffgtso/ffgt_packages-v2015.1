@@ -40,7 +40,7 @@ o.rmempty = false
 
 function f.handle(self, state, data)
   if state == FORM_VALID then
-    ocal sname = uci:get_first("gluon-node-info", "system")
+    local sname = uci:get_first("gluon-node-info", "system")
     uci:set("gluon-node-info", sname, "wan_mac_static", data.static_mac)
     uci:save("gluon-node-info")
     uci:commit("gluon-node-info")
