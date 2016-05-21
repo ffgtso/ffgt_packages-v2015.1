@@ -1,6 +1,6 @@
 include $(TOPDIR)/rules.mk
 
-PKG_NAME:=gluon-status-page
+PKG_NAME:=gluon-new-status-page
 PKG_VERSION:=1
 PKG_RELEASE:=1
 
@@ -8,14 +8,14 @@ PKG_BUILD_DIR := $(BUILD_DIR)/$(PKG_NAME)
 
 include $(INCLUDE_DIR)/package.mk
 
-define Package/gluon-status-page
+define Package/gluon-new-status-page
   SECTION:=gluon
   CATEGORY:=Gluon
   TITLE:=Adds a status page showing information about the node.
   DEPENDS:=+gluon-core +gluon-neighbour-info +uhttpd
 endef
 
-define Package/gluon-status-page/description
+define Package/gluon-new-status-page/description
 	Adds a status page showing information about the node.
 	Especially useful in combination with the next-node feature.
 endef
@@ -30,8 +30,8 @@ endef
 define Build/Compile
 endef
 
-define Package/gluon-status-page/install
+define Package/gluon-new-status-page/install
 	$(CP) ./files/* $(1)/
 endef
 
-$(eval $(call BuildPackage,gluon-status-page))
+$(eval $(call BuildPackage,gluon-new-status-page))
