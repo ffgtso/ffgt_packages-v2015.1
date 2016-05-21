@@ -20,9 +20,9 @@ local latitude = uci:get_first('gluon-node-info', 'location', 'latitude')
 local longitude = uci:get_first('gluon-node-info', 'location', 'longitude')
 local location = ""
 if latitude and longitude then
-  location = "<a href=https://map.hochstift.freifunk.net/#!v:m;n:" .. nodeid .. ">" .. latitude .. ", " .. longitude .. "</a>"
+  location = "<a href=https://map.4830.org/ffgt/#!v:m;n:" .. nodeid .. ">" .. latitude .. ", " .. longitude .. "</a>"
 else
-  location = "<a href=https://map.hochstift.freifunk.net/#!v:m;n:" .. nodeid .. ">none</a>"
+  location = "<a href=https://map.4830.org/ffgt/#!v:m;n:" .. nodeid .. ">none</a>"
 end
 
 local contact = uci:get_first('gluon-node-info', 'owner', 'contact', '')
