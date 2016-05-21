@@ -20,9 +20,9 @@ local latitude = uci:get_first('gluon-node-info', 'location', 'latitude')
 local longitude = uci:get_first('gluon-node-info', 'location', 'longitude')
 local location = ""
 if latitude and longitude then
-  location = "<a href=https://map.4830.org/ffgt/#!v:m;n:" .. nodeid .. ">" .. latitude .. ", " .. longitude .. "</a>"
+  location = "<a href=https://map.4830.org/" .. site.site_code .. /#!v:m;n:" .. nodeid .. ">" .. latitude .. ", " .. longitude .. "</a>"
 else
-  location = "<a href=https://map.4830.org/ffgt/#!v:m;n:" .. nodeid .. ">none</a>"
+  location = "<a href=https://map.4830.org/" .. site.site_code .. "/#!v:m;n:" .. nodeid .. ">none</a>"
 end
 
 local contact = uci:get_first('gluon-node-info', 'owner', 'contact', '')
@@ -96,14 +96,14 @@ io.write("<body>")
 io.write("<h1>" .. escape_html(hostname) .. "</h1>")
 io.write("<pre>")
 
-io.write("Region:      " .. escape_html(site.site_name) .. "\n")
+io.write("Community:   " .. escape_html(site.site_name) .. "\n")
 io.write("Model:       " .. escape_html(model) .. "\n")
 io.write("Firmware:    " .. escape_html(release) .. "\n")
 io.write("MAC:         " .. escape_html(primary_mac) .. "\n")
-io.write("Contact:     " .. escape_html(contact) .. "\n")
+io.write("<!-- Contact:     " .. escape_html(contact) .. " -->\n")
 io.write("Uptime:      " .. escape_html(util.trim(sys.exec("uptime | sed 's/^ \+//'"))) .. "\n")
 io.write("Autoupdater: " .. escape_html(autoupdater) .. "\n")
-io.write("Location:    " .. location .. "\n")
+io.write("<!-- Location:    " .. location .. " -->\n")
 io.write("IPs:         " .. escape_html(util.trim(addresses)) .. "\n")
 io.write("Memory:      " .. string.format("%.1f %% used, %.1f %% free",(fields.MemTotal-fields.MemFree)/fields.MemTotal*100,fields.MemFree/fields.MemTotal*100) .. "\n")
 io.write("</pre>")
