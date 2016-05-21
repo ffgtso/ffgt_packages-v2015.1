@@ -209,6 +209,10 @@ for _, ifname in ipairs(interfaces) do
         if ip == nil and myip:sub(1, 5) ~= "fe80:" then
           ip = myip
         end
+        -- Prefer public v6 IPs, which in 2016 are in "2000::/3", i. e. 2000-3fff
+        if myip:sub(1, 1) == "2" or myip:sub(1, 1) == "3" then
+          ip = myip
+        end
       end
     end
 
