@@ -34,13 +34,14 @@ s = f:section(SimpleSection, nil, [[Falls die WAN-MAC-Adresse
 
 
 o = s:option(Flag, "static_mac", translate("WAN MAC needs white-listing"))
-o.default = uci:get_bool("gluon-node-info", "system", "wan_mac_static") and o.enabled or o.disabled
+o.default = uci:get_first("gluon-node-info", "system", "wan_mac_static") and o.enabled or o.disabled
 o.rmempty = false
 
 
 function f.handle(self, state, data)
   if state == FORM_VALID then
-    uci:set("gluon-node-info", "system", "wan_mac_static", data.static_mac)
+    ocal sname = uci:get_first("gluon-node-info", "system")
+    uci:set("gluon-node-info", sname, "wan_mac_static", data.static_mac)
     uci:save("gluon-node-info")
     uci:commit("gluon-node-info")
   end
