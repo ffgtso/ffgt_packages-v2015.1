@@ -16,10 +16,6 @@ $Id$
 local uci = luci.model.uci.cursor()
 local sysconfig = require 'gluon.sysconfig'
 
-local wan = uci:get_all("network", "wan")
-local wan6 = uci:get_all("network", "wan6")
-local dns = uci:get_first("gluon-wan-dnsmasq", "static")
-
 local f = SimpleForm("macconfig", translate("MAC"))
 f.template = "admin/expertmode"
 
