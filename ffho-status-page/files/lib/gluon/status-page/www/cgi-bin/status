@@ -23,9 +23,9 @@ local location = ""
 
 if latitude and longitude then
   if share_location == '1' then
-    location = "<a href=http://map.4830.org/" .. site.site_code .. /#!v:m;n:" .. nodeid .. ">" .. latitude .. ", " .. longitude .. "</a>"
+    location = "<a href=http://map.4830.org/" .. "site.site_code .. /#!v:m;n:" .. nodeid .. ">" .. latitude .. ", " .. longitude .. "</a>"
   else
-    location = "<a href=http://map.4830.org/" .. site.site_code .. /#!v:m;n:" .. nodeid .. ">hidden <!-- " .. latitude .. ", " .. longitude .. " --></a>"
+    location = "<a href=http://map.4830.org/" .. "site.site_code .. /#!v:m;n:" .. nodeid .. ">hidden<!-- " .. latitude .. ", " .. longitude .. " --></a>"
   end
 else
   location = "<a href=https://map.4830.org/" .. site.site_code .. "/#!v:m;n:" .. nodeid .. ">none</a>"
