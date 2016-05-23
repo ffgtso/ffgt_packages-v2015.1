@@ -18,11 +18,17 @@ local primary_mac = require('gluon.sysconfig').primary_mac
 local nodeid = require('gluon.util').node_id()
 local latitude = uci:get_first('gluon-node-info', 'location', 'latitude')
 local longitude = uci:get_first('gluon-node-info', 'location', 'longitude')
+local share_location = uci:get_first('gluon-node-info', 'location', 'share_location')
 local location = ""
+
 if latitude and longitude then
-  location = "<a href=https://map.hochstift.freifunk.net/#!v:m;n:" .. nodeid .. ">" .. latitude .. ", " .. longitude .. "</a>"
+  if share_location == '1' then
+    location = "<a href=http://map.4830.org/" .. site.site_code .. "/#!v:m;n:" .. nodeid .. ">" .. latitude .. ", " .. longitude .. "</a>"
+  else
+    location = "<a href=http://map.4830.org/" .. site.site_code .. "/#!v:m;n:" .. nodeid .. ">hidden<!-- " .. latitude .. ", " .. longitude .. " --></a>"
+  end
 else
-  location = "<a href=https://map.hochstift.freifunk.net/#!v:m;n:" .. nodeid .. ">none</a>"
+  location = "<a href=https://map.4830.org/" .. site.site_code .. "/#!v:m;n:" .. nodeid .. ">none</a>"
 end
 
 local contact = uci:get_first('gluon-node-info', 'owner', 'contact', '')
@@ -96,11 +102,11 @@ io.write("<body>")
 io.write("<h1>" .. escape_html(hostname) .. "</h1>")
 io.write("<pre>")
 
-io.write("Region:      " .. escape_html(site.site_name) .. "\n")
+io.write("Community:   " .. escape_html(site.site_name) .. "\n")
 io.write("Model:       " .. escape_html(model) .. "\n")
 io.write("Firmware:    " .. escape_html(release) .. "\n")
 io.write("MAC:         " .. escape_html(primary_mac) .. "\n")
-io.write("Contact:     " .. escape_html(contact) .. "\n")
+io.write("<!-- Contact:     " .. escape_html(contact) .. "\n -->")
 io.write("Uptime:      " .. escape_html(util.trim(sys.exec("uptime | sed 's/^ \+//'"))) .. "\n")
 io.write("Autoupdater: " .. escape_html(autoupdater) .. "\n")
 io.write("Location:    " .. location .. "\n")
@@ -201,6 +207,10 @@ for _, ifname in ipairs(interfaces) do
     if node["network"] and node["network"]["addresses"] then
       for _, myip in ipairs(node["network"]["addresses"]) do
         if ip == nil and myip:sub(1, 5) ~= "fe80:" then
+          ip = myip
+        end
+        -- Prefer public v6 IPs, which in 2016 are in "2000::/3", i. e. 2000-3fff
+        if myip:sub(1, 1) == "2" or myip:sub(1, 1) == "3" then
           ip = myip
         end
       end

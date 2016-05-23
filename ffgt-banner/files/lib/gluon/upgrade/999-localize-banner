@@ -1,0 +1,13 @@
+#!/bin/sh
+
+MODEL=/tmp/sysinfo/model
+if [ ! -e ${MODEL} ]; then
+  MODEL=/tmp/banner
+  awk </proc/cpuinfo '/^model name/ {model=substr($0, index($0, ":")+2);} END{print model;}' >>${MODEL}
+else
+  cp ${MODEL} /tmp/banner
+fi
+
+
+grep "^  OS: " /etc/banner >/dev/null || echo -e "OS: `grep ', r' /etc/banner.openwrt | sed -e 's/.*(\(.*\)).*$/\1/'`\nHW: `cat /tmp/banner`\nFW: `cat /lib/gluon/release`" | \
+ awk 'BEGIN{l=0} {line[l++]=$0;} END{printf("\n  %-36.36s    %-36.36s\n  %-72.72s\n", line[0], line[2], line[1]);}' >>/etc/banner

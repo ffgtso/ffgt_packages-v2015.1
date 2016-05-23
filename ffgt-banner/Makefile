@@ -68,8 +68,10 @@ exit 0
 endef
 
 define Package/ffgt-banner/install
-	$(INSTALL_DIR) $(1)/etc/
-	$(INSTALL_DATA) ./files/etc/banner.ffgt $(1)/etc/
+	$(CP) ./files/* $(1)/
+
+#	$(INSTALL_DIR) $(1)/etc/
+#	$(INSTALL_DATA) ./files/etc/banner.ffgt $(1)/etc/
 endef
 
 $(eval $(call BuildPackage,ffgt-banner))

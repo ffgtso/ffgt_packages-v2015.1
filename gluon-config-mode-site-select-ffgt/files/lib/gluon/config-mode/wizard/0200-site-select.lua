@@ -14,8 +14,7 @@ function M.section(form)
     if not lat then lat=0 end
     if not lon then lon=0 end
     -- FXIME! This is the totally wrong place, but in geoloc/0200-geo-location.lua
-    -- lua/luci fail due to what seems to be a caching issue. I hate to need to work around
-    -- stupidity :(
+    -- lua/luci fail due to what seems to be a caching issue.
     if not unlocode or (lat == "51" and lon == "9") then
       luci.http.redirect(luci.dispatcher.build_url("gluon-config-mode/wizard-pre"))
     end
@@ -26,8 +25,8 @@ function M.section(form)
 	    Bitte denke daran, dass Dein Router sich dann nur mit dem Netz
 	    der ausgewählten Community verbindet und ggf. lokales Meshing nicht
 	    funktioniert bei falscher Auswahl. Vorzugsweise schließt Du
-	    Deinen Freifunk-Knoten jetzt per gelbem Port an Deinen Internet-
-	    Router an und startest noch mal von vorn.
+	    Deinen Freifunk-Knoten jetzt an Deinen Internet-Router an und
+	    startest noch mal von vorn.
 	    ]])
 	
     	uci:foreach('siteselect', 'site',
