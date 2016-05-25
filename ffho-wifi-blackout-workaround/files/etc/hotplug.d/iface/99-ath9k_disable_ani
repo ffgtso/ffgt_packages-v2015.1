@@ -28,8 +28,11 @@ config_get fw_branch "settings" "branch"
 
 new_ani_state=1
 log_msg="Current firmware branch is: ${fw_branch}"
-if [ "$fw_branch" == "stable" ] ; then
-	new_ani_state=0
+#if [ "$fw_branch" == "stable" ] ; then
+# Do it *always*. It should be tested on experimental and testing stages *first*,
+# so just enable it always. -wusel, 20160526
+if [ "X$fw_branch" != "X" ] ; then
+ 	new_ani_state=0
 	log_msg="${log_msg} (disabling ANI)"
 else
 	log_msg="${log_msg} (enabling ANI)"
