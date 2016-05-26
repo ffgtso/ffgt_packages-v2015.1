@@ -9,10 +9,10 @@ function M.section(form)
   os.execute('/lib/gluon/config-mode/check4online.sh')
   if not fs.access("/tmp/is_online") then
     local s = form:section(cbi.SimpleSection, nil, [[<b>Keine Internetverbindung!</b>
-       Bitte schlie&szlig;e den Knoten &uuml;ber die <i>gelben</i> Ports an Deinen
-       Internetzugang an, damit die Konfiguration korrekt vorgenommen werden kann. Ohne
+       Bitte schlie&szlig;e den Knoten &uuml;ber den <i>blauen</i> Port an Deinen
+       Internetrouter an, damit die Konfiguration korrekt vorgenommen werden kann. Ohne
        Internetzugang (freier Zugang via HTTP (Port 80, 443) und zum DNS (Port 53)) ist
-       die Konfiguration NICHT m&ouml;glich.]])
+       die Konfiguration derzeit NICHT m&ouml;glich.]])
   end
 
   local s = form:section(cbi.SimpleSection, nil, [[]])
@@ -61,9 +61,17 @@ function M.section(form)
 
   local mystr
   if lat == 0 and lon == 0 then
-    mystr = string.format("Hier sollte unsere &Uuml;bersichtskarte zu sehen sein, sofern Dein Computer Internet-Zugang hat. Einfach die Karte auf Deinen Standort ziehen/zoomen, den Button zur Koordinatenanzeige klicken und nach dem Klick in die Karte dann die Daten in die Felder oben kopieren:<p><iframe src=\"http://map.4830.org/geomap.html\" width=\"100%%\" height=\"700\">Unsere Knotenkarte</iframe></p>")
+    mystr = string.format( [[Hier sollte unsere &Uuml;bersichtskarte zu sehen sein,
+      sofern Dein Computer Internet-Zugang hat. Einfach die Karte auf Deinen Standort
+      ziehen/zoomen, den Button zur Koordinatenanzeige klicken und nach dem Klick in
+      die Karte dann die Daten in die Felder oben kopieren:<p>
+      <iframe src=\"http://map.4830.org/geomap.html\" width=\"100%%\" height=\"700\">Unsere Knotenkarte</iframe></p>]] )
   else
-    mystr = string.format("Hier sollte unsere Karte zu sehen sein, sofern Dein Computer Internet-Zugang hat. Einfach die Karte auf Deinen Standort ziehen/zoomen, den Button zur Koordinatenanzeige klicken und nach dem Klick in die Karte dann die Daten in die Felder oben kopieren:<p><iframe src=\"http://map.4830.org/geomap.html#lat=%f&amp;lon=%f\" width=\"100%%\" height=\"700\">Unsere Knotenkarte</iframe></p>", lat, lon)
+    mystr = string.format( [[Hier sollte unsere Karte zu sehen sein, sofern Dein
+    Computer Internet-Zugang hat. Einfach die Karte auf Deinen Standort ziehen/zoomen,
+    den Button zur Koordinatenanzeige klicken und nach dem Klick in die Karte dann die
+    Daten in die Felder oben kopieren:<p>
+    <iframe src=\"http://map.4830.org/geomap.html#lat=%f&amp;lon=%f\" width=\"100%%\" height=\"700\">Unsere Knotenkarte</iframe></p>]] , lat, lon)
   end
   local s = form:section(cbi.SimpleSection, nil, mystr)
 end
