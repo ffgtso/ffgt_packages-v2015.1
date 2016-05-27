@@ -20,6 +20,7 @@ local latitude = uci:get_first('gluon-node-info', 'location', 'latitude')
 local longitude = uci:get_first('gluon-node-info', 'location', 'longitude')
 local share_location = uci:get_first('gluon-node-info', 'location', 'share_location')
 local location = ""
+local wan_mac = uci:get('network', 'wan', 'macaddr')
 
 if latitude and longitude then
   if share_location == '1' then
@@ -105,7 +106,8 @@ io.write("<pre>")
 io.write("Community:   " .. escape_html(site.site_name) .. "\n")
 io.write("Model:       " .. escape_html(model) .. "\n")
 io.write("Firmware:    " .. escape_html(release) .. "\n")
-io.write("MAC:         " .. escape_html(primary_mac) .. "\n")
+io.write("MAC (prim.): " .. escape_html(primary_mac) .. "\n")
+io.write("MAC (WAN):   " .. escape_html(wan_mac) .. "\n")
 io.write("<!-- Contact:     " .. escape_html(contact) .. "\n -->")
 io.write("Uptime:      " .. escape_html(util.trim(sys.exec("uptime | sed 's/^ \+//'"))) .. "\n")
 io.write("Autoupdater: " .. escape_html(autoupdater) .. "\n")
