@@ -15,18 +15,24 @@ $Id$
 
 local uci = luci.model.uci.cursor()
 local sysconfig = require 'gluon.sysconfig'
+local util = require 'gluon.util'
 
 local f = SimpleForm("macconfig", translate("MAC"))
 f.template = "admin/expertmode"
 
 local s
 local o
+local wan_mac       = util.generate_mac_2014_4(1, 0)
+local wan_mac_fixed = util.generate_mac_2014_3(1, 0)
 
 s = f:section(SimpleSection, nil, [[Falls die WAN-MAC-Adresse
   des Knotens z. B. in einer Firewall freigeschaltet werden mu&szlig;,
   aktiviere bitte die folgende Option. Wir werden dann versuchen,
   die WAN-MAC-Adresse auch in zuk&uuml;nftigen Firmwareversionen nicht
   zu &auml;ndern.]])
+
+s = f:section(SimpleSection, nil, "WAN MAC normal: " .. wan_mac)
+s = f:section(SimpleSection, nil, "WAN MAC fest: " .. wan_mac_fixed)
 
 
 o = s:option(Flag, "static_mac", translate("WAN MAC needs white-listing"))
