@@ -21,6 +21,18 @@ local longitude = uci:get_first('gluon-node-info', 'location', 'longitude')
 local share_location = uci:get_first('gluon-node-info', 'location', 'share_location')
 local location = ""
 local wan_mac = uci:get('network', 'wan', 'macaddr')
+local wan_if = util.exec("/usr/sbin/brctl show | /usr/bin/awk '/br-wan/ {print $NF;}'")
+local wan_if_link = ""
+if wan_if == '' then
+  wan_if = "n/a"
+else
+  wan_if_link = util.trim(fs.readfile("/sys/class/net/" .. wan_if .."/carrier") or "?")
+  if wan_if_link == "1" then
+    wan_if_link = "link up"
+  else
+    wan_if_link = "link down"
+  end
+end
 
 if latitude and longitude then
   if share_location == '1' then
@@ -108,6 +120,7 @@ io.write("Model:       " .. escape_html(model) .. "\n")
 io.write("Firmware:    " .. escape_html(release) .. "\n")
 io.write("MAC (prim.): " .. escape_html(primary_mac) .. "\n")
 io.write("MAC (WAN):   " .. escape_html(wan_mac) .. "\n")
+io.write("WAN Interf.: " .. escape_html(wan_if) .. " (" .. escape_html(wan_if_link) .. ")\n")
 io.write("<!-- Contact:     " .. escape_html(contact) .. "\n -->")
 io.write("Uptime:      " .. escape_html(util.trim(sys.exec("uptime | sed 's/^ \+//'"))) .. "\n")
 io.write("Autoupdater: " .. escape_html(autoupdater) .. "\n")
