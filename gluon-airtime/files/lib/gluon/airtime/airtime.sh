@@ -1,6 +1,12 @@
 #!/bin/sh
 
-# Setup once at runtime
+# Setup once at runtime ...
+# ... after at least 5 minutes of uptime have passed:
+uptime=`awk </proc/uptime 'BEGIN{uptime=0;} {uptime=sprintf("%d", $1);} END{print uptime;}'`
+if [ $uptime -lt 300 ]; then
+  echo "Waiting to pass 300 seconds of uptime for stabilizing."
+  exit 0
+fi
 
 if [ ! -e /tmp/airtime.in ]; then
   echo "DEV2G=\"\""  > /tmp/airtime.in
