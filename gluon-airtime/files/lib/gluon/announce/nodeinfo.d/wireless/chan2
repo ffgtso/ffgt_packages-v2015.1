@@ -1,4 +1,5 @@
-local wifitwo = uci:get('wireless', 'radio0', 'channel')
+local radiotwo = util.trim(fs.readfile("/tmp/radio2G"))
+local wifitwo = uci:get('wireless', radiotwo, 'channel')
 if wifitwo ~= '' then
         return wifitwo
 end
