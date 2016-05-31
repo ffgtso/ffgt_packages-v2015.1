@@ -117,6 +117,7 @@ function M.handle(data)
       end
     end
   end
+  os.execute('/lib/gluon/upgrade/020-site-select')
 end
 
 return M
