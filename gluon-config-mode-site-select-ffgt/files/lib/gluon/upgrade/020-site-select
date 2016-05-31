@@ -33,10 +33,11 @@ if not fs.access("/tmp/site-upgrade.lock") then
     os.execute(string.format("/sbin/uci commit gluon-node-info 2>/dev/null"))
   else
     -- Copy the proper new site.conf of the new community in place.
+    newcommunity = string.gsub(sys.exec("uci get gluon-node-info.@location[0].locode 2>/dev/null"), "\n", "") or ''
     os.execute("echo 'Updating system-wide site.conf'")
     local cmdline=string.format('/sbin/uci get siteselect.%s.path', newcommunity)
     local srcfile=string.gsub(sys.exec(cmdline), "\n", "")
-    -- os.execute(string.format("echo src=%s com=%s", srcfile, newcommunity))
+    os.execute(string.format("echo src=%s com=%s", srcfile, newcommunity))
     os.execute(string.format("/bin/cp %s /lib/gluon/site.conf", srcfile))
     os.execute('sh "/lib/gluon/site-upgrade"')
   end
