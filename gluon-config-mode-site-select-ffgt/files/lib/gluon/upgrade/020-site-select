@@ -53,7 +53,7 @@ if not fs.access("/tmp/site-upgrade.lock") then
     -- Copy the proper new site.conf of the new community in place.
     -- 2016-06-04: Do *not* do stuff based on locode here!
     -- newcommunity = string.gsub(sys.exec("uci get gluon-node-info.@location[0].locode 2>/dev/null"), "\n", "") or ''
-    if newcommunity != site.site_selectcode then
+    if not newcommunity == site.site_selectcode then
       os.execute("echo 'Updating system-wide site.conf'")
       local cmdline=string.format('/sbin/uci get siteselect.%s.path', newcommunity)
       local srcfile=string.gsub(sys.exec(cmdline), "\n", "")
