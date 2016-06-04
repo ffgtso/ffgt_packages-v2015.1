@@ -5,15 +5,30 @@ local site = require 'gluon.site_config'
 local fs = require "nixio.fs"
 local c = uci.cursor()
 local sys = require 'luci.sys'
+local lat
+local lon
+local newcommunity
+local cmdline
+local srcfile
+
+-- 2016-06-04: New model, since most sites these days do have enforced coordinates.
+--
+-- a) check for siteselect field
+--    - that's where we store the site.conf selection
+--    - locode is updated by rgeo.sh/senddata.sh independently
+-- b) Only if missing, try to geo-locate, putting locode (or "zzz") into siteselect
+-- c) Else, if site.site_selectcode != siteselect, copy siteselect site.conf to /lib/gluon
+--    - Use case: siteselect was changed manually
 
 if not fs.access("/tmp/site-upgrade.lock") then
   os.execute('/bin/touch /tmp/site-upgrade.lock')
-  local lat
-  local lon
-  local newcommunity=c:get_first('gluon-node-info', 'location', 'siteselect')
+  newcommunity=c:get_first('gluon-node-info', 'location', 'siteselect')
   if not newcommunity then
+    --
+    -- Case b) above
+    --
     os.execute("echo 'Upgrading from legacy FW.'")
-    -- Upgrade from non-site-select firmware: try geolocate if needed, try rgeo, use gto as last resort.
+    -- Upgrade from non-site-select firmware: try geolocate if needed, try rgeo, use zzz as last resort.
     lat = tonumber(sys.exec("uci get gluon-node-info.@location[0].latitude 2>/dev/null")) or 0
     lon = tonumber(sys.exec("uci get gluon-node-info.@location[0].longitude 2>/dev/null")) or 0
     if ((lat == 0) or (lat == 51)) and ((lon == 0) or (lon == 9)) then
@@ -32,20 +47,26 @@ if not fs.access("/tmp/site-upgrade.lock") then
     os.execute(string.format("/sbin/uci set gluon-node-info.@location[0].siteselect=%c%s%c 2>/dev/null", 39, newcommunity, 39))
     os.execute(string.format("/sbin/uci commit gluon-node-info 2>/dev/null"))
   else
+    --
+    -- Case c) above
+    --
     -- Copy the proper new site.conf of the new community in place.
-    newcommunity = string.gsub(sys.exec("uci get gluon-node-info.@location[0].locode 2>/dev/null"), "\n", "") or ''
-    os.execute("echo 'Updating system-wide site.conf'")
-    local cmdline=string.format('/sbin/uci get siteselect.%s.path', newcommunity)
-    local srcfile=string.gsub(sys.exec(cmdline), "\n", "")
-    os.execute(string.format("echo src=%s com=%s", srcfile, newcommunity))
-    os.execute(string.format("/bin/cp %s /lib/gluon/site.conf", srcfile))
-    os.execute('sh "/lib/gluon/site-upgrade"')
+    -- 2016-06-04: Do *not* do stuff based on locode here!
+    -- newcommunity = string.gsub(sys.exec("uci get gluon-node-info.@location[0].locode 2>/dev/null"), "\n", "") or ''
+    if newcommunity != site.site_selectcode then
+      os.execute("echo 'Updating system-wide site.conf'")
+      local cmdline=string.format('/sbin/uci get siteselect.%s.path', newcommunity)
+      local srcfile=string.gsub(sys.exec(cmdline), "\n", "")
+      os.execute(string.format("echo src=%s com=%s", srcfile, newcommunity))
+      os.execute(string.format("/bin/cp %s /lib/gluon/site.conf", srcfile))
+      os.execute('sh "/lib/gluon/site-upgrade"')
+    end
   end
 
   local locode=string.gsub(sys.exec("uci get gluon-node-info.@location[0].locode 2>/dev/null"), "\n", "") or ''
   if string.len(locode) == 0 then
     os.execute("echo 'Upgrading from legacy FW, second try.'")
-    -- Upgrade from non-site-select firmware: try geolocate if needed, try rgeo, use gto as last resort.
+    -- Upgrade from non-site-select firmware: try geolocate if needed, try rgeo, use zzz as last resort.
     lat = tonumber(sys.exec("uci get gluon-node-info.@location[0].latitude 2>/dev/null")) or 0
     lon = tonumber(sys.exec("uci get gluon-node-info.@location[0].longitude 2>/dev/null")) or 0
     if ((lat == 0) or (lat == 51)) and ((lon == 0) or (lon == 9)) then
@@ -66,9 +87,9 @@ if not fs.access("/tmp/site-upgrade.lock") then
 
     -- Copy the proper according to loc site.conf in place.
     os.execute("echo 'Updating system-wide site.conf'")
-    local cmdline=string.format('/sbin/uci get siteselect.%s.path', newcommunity)
-    local srcfile=string.gsub(sys.exec(cmdline), "\n", "")
-    -- os.execute(string.format("echo src=%s com=%s", srcfile, newcommunity))
+    cmdline=string.format('/sbin/uci get siteselect.%s.path', newcommunity)
+    srcfile=string.gsub(sys.exec(cmdline), "\n", "")
+    os.execute(string.format("echo src=%s com=%s", srcfile, newcommunity))
     os.execute(string.format("/bin/cp %s /lib/gluon/site.conf", srcfile))
     os.execute('sh "/lib/gluon/site-upgrade"')
   end
