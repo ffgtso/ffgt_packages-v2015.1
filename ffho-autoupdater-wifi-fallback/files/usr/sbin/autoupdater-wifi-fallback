@@ -83,9 +83,6 @@ end
 
 local function switch_to_fallback_mode(radio, ssid, bssid)
   -- FIXME: we should not change local files ...
-  os.execute("sed -i -e 's/^[ \t]\(.*disable_vht=1.*\)/#\1/g' /lib/netifd/hostapd.sh")
-  io.popen('logger -s -t autoupdater-wifi-fallback -p local0.info "Permanently changed /lib/netifd/hostapd.sh"')
-
   io.popen('logger -s -t autoupdater-wifi-fallback -p local0.info "connect to '  .. radio .. ' ' .. ssid .. ' ' .. bssid .. '"')
   uci:delete_all('wireless', 'wifi-iface')
   uci:section('wireless', 'wifi-iface', 'fallback',

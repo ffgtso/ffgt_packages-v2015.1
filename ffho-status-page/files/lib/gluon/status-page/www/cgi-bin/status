@@ -36,11 +36,11 @@ if wan_if == '' then
 
   for _, radio in ipairs(radios) do
     if not uci:get_bool('wireless', 'uplink_' .. radio, "disabled") then
-      wan_if = uplink' .. radio
+      wan_if = 'uplink' .. radio:gsub("radio", "")
     end
   end
 
-  if wan_if != "n/a" then
+  if wan_if:find("uplink") then
     wan_if_link = util.trim(util.exec("/lib/gluon/status-page/parse_uplinkX.sh " .. wan_if))
     if wan_if_link == '' then
       wan_if_link = "n/a"
@@ -176,17 +176,27 @@ for _, ifname in ipairs(interfaces) do
   io.write("</pre>")
 end
 
+io.write("<h2>Mesh status</h2>")
+io.write("<pre>")
+io.write(util.exec("batctl gwl"))
+io.write("</pre>")
+
 io.write("<h2>VPN status</h2>")
 io.write("<pre>")
 
-if string.len(util.exec("ip -f inet address show dev br-wan | grep global")) >= 2 then
-  io.write("IPv4 configured\n")
+local uplnk_if="br-wan"
+if wan_if:match("uplink") then
+  uplink_if=wan_if
+end
+
+if string.len(util.exec("ip -f inet address show dev " .. uplink_if .. " | grep global")) >= 2 then
+  io.write("IPv4 configured via " .. uplink_if .. "\n")
 else
   io.write("IPv4 not configured\n")
 end
 
-if string.len(util.exec("ip -f inet6 address show dev br-wan | grep global")) >= 2 then
-  io.write("IPv6 configured\n")
+if string.len(util.exec("ip -f inet6 address show dev " .. uplink_if .. " | grep global")) >= 2 then
+  io.write("IPv6 configured via " .. uplink_if .. "\n")
 else
   io.write("IPv6 not configured\n")
 end
