@@ -82,7 +82,6 @@ local function run_autoupdater()
 end
 
 local function switch_to_fallback_mode(radio, ssid, bssid)
-  -- FIXME: we should not change local files ...
   io.popen('logger -s -t autoupdater-wifi-fallback -p local0.info "connect to '  .. radio .. ' ' .. ssid .. ' ' .. bssid .. '"')
   uci:delete_all('wireless', 'wifi-iface')
   uci:section('wireless', 'wifi-iface', 'fallback',
