@@ -184,7 +184,7 @@ io.write("</pre>")
 io.write("<h2>VPN status</h2>")
 io.write("<pre>")
 
-local uplnk_if="br-wan"
+local uplink_if="br-wan"
 if wan_if:match("uplink") then
   uplink_if=wan_if
 end
