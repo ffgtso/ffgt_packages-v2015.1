@@ -1,0 +1,12 @@
+local siteselect = uci:get_first('gluon-node-info', 'location', 'siteselect', '')
+local site = require 'gluon.site_config'
+
+if siteselect == '' then
+  siteselect = "n/a"
+end
+
+if site.site_selectcode then
+  siteselect = siteselect .. "/" .. site.site_selectcode
+end
+
+return siteselect
