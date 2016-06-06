@@ -37,13 +37,26 @@ local o = s:option(cbi.ListValue, "community", "Community")
 o.rmempty = false
 o.optional = false
 
-
-
-
-s = f:section(SimpleSection, nil, [[Bitte mit "Weiter" weitergehen.]])
-
 function f.handle(self, state, data)
-  return true
+   if state == FORM_VALID then
+    local sname = uci:get_first("gluon-node-info", "location")
+    local siteselect = uci:get_first("gluon-node-info", sname, "siteselect")
+
+    if not siteselect == data.community then
+      uci:set("gluon-node-info", sname, "siteselect", data.community)
+      uci:save("gluon-node-info")
+      uci:commit("gluon-node-info")
+      -- Copy the proper according to loc site.conf in place.
+      os.execute("echo 'Updating system-wide site.conf'")
+      local cmdline=string.format('/sbin/uci get siteselect.%s.path', data.community)
+      local srcfile=string.gsub(sys.exec(cmdline), "\n", "")
+      os.execute(string.format("echo src=%s com=%s", srcfile, data.community))
+      os.execute(string.format("/bin/cp %s /lib/gluon/site.conf", srcfile))
+      os.execute('/lib/gluon/site-upgrade &')
+    end
+  end
+
+ return true
 end
 
 return f
