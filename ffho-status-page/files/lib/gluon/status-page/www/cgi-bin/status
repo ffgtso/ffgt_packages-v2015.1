@@ -21,30 +21,14 @@ local longitude = uci:get_first('gluon-node-info', 'location', 'longitude')
 local share_location = uci:get_first('gluon-node-info', 'location', 'share_location')
 local location = ""
 local wan_mac = uci:get('network', 'wan', 'macaddr')
-local wan_if = util.trim(util.exec("/usr/sbin/brctl show | /usr/bin/awk '/br-wan/ {print $NF;}'"))
+local wan_if = util.trim(util.exec("(cd /sys/class/net/br-wan/brif/ ; for i in * ; do echo $i ; done) | awk '/uplink/ {uplink=$1;} /eth/ {ether=$1;} END {if(uplink!=\"\") print uplink; else print ether;}'"))
 local wan_if_link = ""
 local radios = {}
 
-if wan_if == '' then
-  wan_if = "n/a"
-
-  uci:foreach('wireless', 'wifi-device',
-    function(s)
-	  table.insert(radios, s['.name'])
-	end
-  )
-
-  for _, radio in ipairs(radios) do
-    if not uci:get_bool('wireless', 'uplink_' .. radio, "disabled") then
-      wan_if = 'uplink' .. radio:gsub("radio", "")
-    end
-  end
-
-  if wan_if:find("uplink") then
-    wan_if_link = util.trim(util.exec("/lib/gluon/status-page/parse_uplinkX.sh " .. wan_if))
-    if wan_if_link == '' then
-      wan_if_link = "n/a"
-    end
+if wan_if:find("uplink") then
+  wan_if_link = util.trim(util.exec("/lib/gluon/status-page/parse_uplinkX.sh " .. wan_if))
+  if wan_if_link == '' then
+    wan_if_link = "n/a"
   end
 else
   wan_if_link = util.trim(fs.readfile("/sys/class/net/" .. wan_if .."/carrier"))
