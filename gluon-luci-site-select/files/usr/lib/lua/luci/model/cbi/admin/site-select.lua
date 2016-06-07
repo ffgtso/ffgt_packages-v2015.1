@@ -62,17 +62,18 @@ function f.handle(self, state, data)
     local sname = uci:get_first("gluon-node-info", "location")
     local siteselect = uci:get("gluon-node-info", sname, "siteselect")
 
-    if not siteselect == data.community then
+    if siteselect ~= data.community then
       uci:set("gluon-node-info", sname, "siteselect", data.community)
       uci:save("gluon-node-info")
       uci:commit("gluon-node-info")
       -- Copy the proper according to loc site.conf in place.
-      os.execute("echo 'Updating system-wide site.conf'")
+      os.execute("logger 'Updating system-wide site.conf'")
       local srcfile=uci:get("siteselect", data.community, "path")
-      os.execute(string.format("echo src=%s com=%s", srcfile, data.community))
+      os.execute(string.format("logger 'src=%s com=%s'", srcfile, data.community))
       os.execute(string.format("/bin/cp %s /lib/gluon/site.conf", srcfile))
       os.execute('/lib/gluon/site-upgrade &')
     end
+    luci.http.redirect(luci.dispatcher.build_url("admin"))
   end
 
  return true
