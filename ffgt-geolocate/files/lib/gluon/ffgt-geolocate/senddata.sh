@@ -1,6 +1,8 @@
 #!/bin/sh
-# This script is supposed to be run every minute via cron.
-
+# This script is supposed to be run every 1-5 minutes via cron.
+#
+# FIXME: do not uci commit all the time with is_mobile! That could kill the FLASH rather soonish :(
+#
 # Sent WiFi info once.
 # If is_mobile node, fetch location and fill in geoloc data.
 # If is_mobile, do this every 5 Minutes. Otherwise, it can be manually requested in config-mode.
@@ -15,6 +17,7 @@ isconfigured="`/sbin/uci get gluon-setup-mode.@setup_mode[0].configured 2>/dev/n
 if [ "$isconfigured" != "1" ]; then
  isconfigured=0
 fi
+didenablewifi=0
 
 if [ -e /tmp/run/wifi-data-sent ]; then
  runnow=0
@@ -60,11 +63,16 @@ if [ ${runnow} -eq 1 ]; then
   /usr/sbin/iw ${SCANIF} scan 2>/dev/null >/dev/null
   if [ $? -ne 0 ]; then
    /sbin/ifconfig ${SCANIF} up
+   didenablewifi=1
    sleep 5
   fi
   /usr/bin/wget -q -O /dev/null "`/usr/sbin/iw dev ${SCANIF} scan | /usr/bin/awk -v mac=$mac -v ipv4prefix=$IPVXPREFIX -f /lib/gluon/ffgt-geolocate/preparse.awk`" && /bin/touch /tmp/run/wifi-data-sent
  else
   /usr/bin/wget -q -O /dev/null "`cat /lib/gluon/ffgt-geolocate/iw-scan-dummy.data | /usr/bin/awk -v mac=$mac -v ipv4prefix=$IPVXPREFIX -f /lib/gluon/ffgt-geolocate/preparse.awk`" && /bin/touch /tmp/run/wifi-data-sent
+ fi
+ if [ $didenablewifi == 1 ]; then
+   /sbin/ifconfig ${SCANIF} down
+   didenablewifi =0
  fi
  # On success only ...
  if [ -e /tmp/run/wifi-data-sent ]; then
@@ -90,21 +98,23 @@ if [ ${runnow} -eq 1 ]; then
      /usr/bin/awk </tmp/geoloc.out '/^LAT:/ {printf("/sbin/uci set gluon-node-info.@location[0].latitude=%s\n", $2);} /^LON:/ {printf("/sbin/uci set gluon-node-info.@location[0].longitude=%s\n", $2);}' >>/tmp/geoloc.sh
      /usr/bin/awk </tmp/geoloc.out '/^ADR:/ {printf("/sbin/uci set gluon-node-info.@location[0].addr=%c%s%c\n", 39, substr($0, 6), 39);} /^CTY:/ {printf("/sbin/uci set gluon-node-info.@location[0].city=%c%s%c\n", 39, substr($0, 6), 39);}' >>/tmp/geoloc.sh
      /usr/bin/awk </tmp/geoloc.out '/^LOC:/ {printf("/sbin/uci set gluon-node-info.@location[0].locode=%s\n", $2)}; /^ZIP:/ {printf("/sbin/uci set gluon-node-info.@location[0].zip=%s\n", $2);} END{printf("/sbin/uci commit gluon-node-info\n");}' >>/tmp/geoloc.sh
-     /bin/sh /tmp/geoloc.sh
-     if [ $isconfigured -ne 1 ]; then
-      loc="`/sbin/uci get gluon-node-info.@location[0].locode 2>/dev/null`"
-      adr="`/sbin/uci get gluon-node-info.@location[0].addr 2>/dev/null`"
-      zip="`/sbin/uci get gluon-node-info.@location[0].zip 2>/dev/null`"
-      if [ "x${zip}" != "x" -a "x${adr}" != "x" ]; then
-       nodeid=`echo "util=require 'gluon.util' print(string.format('%s', string.sub(util.node_id(), 9)))" | /usr/bin/lua`
-       suffix=`echo "util=require 'gluon.util' print(string.format('%s', string.sub(util.node_id(), 9)))" | /usr/bin/lua`
-       hostname="${zip}-${adr}-${suffix}"
-       #hostname="${zip}-freifunk-${nodeid}"
-       /sbin/uci set system.@system[0].hostname="${hostname}"
-       /sbin/uci commit system
-      fi
-     fi
-    fi
+     if [ ${mobile} -eq 1 -o ${forcerun} -eq 1 ]; then
+      /bin/sh /tmp/geoloc.sh
+      if [ $isconfigured -ne 1 ]; then
+       loc="`/sbin/uci get gluon-node-info.@location[0].locode 2>/dev/null`"
+       adr="`/sbin/uci get gluon-node-info.@location[0].addr 2>/dev/null`"
+       zip="`/sbin/uci get gluon-node-info.@location[0].zip 2>/dev/null`"
+       if [ "x${zip}" != "x" -a "x${adr}" != "x" ]; then
+        nodeid=`echo "util=require 'gluon.util' print(string.format('%s', string.sub(util.node_id(), 9)))" | /usr/bin/lua`
+        suffix=`echo "util=require 'gluon.util' print(string.format('%s', string.sub(util.node_id(), 9)))" | /usr/bin/lua`
+        hostname="${zip}-${adr}-${suffix}"
+        #hostname="${zip}-freifunk-${nodeid}"
+        /sbin/uci set system.@system[0].hostname="${hostname}"
+        /sbin/uci commit system
+       fi # "x${zip}"
+      fi # $isconfigured -ne 1
+     fi # ${mobile} -eq 1
+    fi # LAT not 0
    fi
   fi
  fi
