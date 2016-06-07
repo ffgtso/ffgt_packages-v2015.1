@@ -50,6 +50,7 @@ if [ "X${curlat}" != "X" -a "X${curlon}" != "X" ]; then
      fi
     fi
    fi
+   /bin/touch ${LOCKFILE}
   fi
  fi
 fi
