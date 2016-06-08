@@ -11,7 +11,7 @@ local newcommunity
 local cmdline
 local srcfile
 
--- 2016-06-04: New model, since most sites these days do have enforced coordinates.
+-- 2016-06-04: Reworked, since most sites these days do have enforced coordinates.
 --
 -- a) check for siteselect field
 --    - that's where we store the site.conf selection
@@ -21,7 +21,7 @@ local srcfile
 --    - Use case: siteselect was changed manually
 
 -- Caveat: Firmware comes with a default site.conf, from now on with "site_selectcode = 'demo'".
--- On reboot, upgrade scripts need to make sure that a proper version from /lib/gluon/site-select/
+-- On upgrade, upgrade scripts need to make sure that a proper version from /lib/gluon/site-select/
 -- is pushed to /lib/gluon/site.conf.
 
 if not fs.access("/tmp/site-upgrade.lock") then
@@ -57,7 +57,6 @@ if not fs.access("/tmp/site-upgrade.lock") then
     --
     -- Copy the proper new site.conf of the new community in place.
     -- 2016-06-04: Do *not* do stuff based on locode here!
-    -- newcommunity = string.gsub(sys.exec("uci get gluon-node-info.@location[0].locode 2>/dev/null"), "\n", "") or ''
     if newcommunity ~= site.site_selectcode then
       os.execute("logger 'Updating system-wide site.conf'")
       local cmdline=string.format('/sbin/uci get siteselect.%s.path', newcommunity)
