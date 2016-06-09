@@ -1,0 +1,48 @@
+--- meshflix/lib/infobox/node.js        2016-06-09 10:28:28.769606100 +0000
++++ node.js     2016-05-28 09:37:17.749205725 +0000
+@@ -185,6 +185,23 @@
+     }
+   }
+
++  function showAIRTIME2(d) {
++    if (!("airtime2" in d.nodeinfo.wireless))
++      return undefined
++
++    return function (el) {
++      el.appendChild(showBar("Airtime2", d.nodeinfo.wireless.airtime2))
++    }
++  }
++
++  function showAIRTIME5(d) {
++    if (!("airtime5" in d.nodeinfo.wireless))
++      return undefined
++
++    return function (el) {
++      el.appendChild(showBar("Airtime5", d.nodeinfo.wireless.airtime5))
++    }
++  }
+
+   function showAutoupdate(d) {
+     var au = dictGet(d.nodeinfo, ["software", "autoupdater"])
+@@ -255,6 +272,21 @@
+       attributeEntry(attributes, "Kontakt", dictGet(d.nodeinfo, ["owner", "contact"]))
+
+     attributeEntry(attributes, "Hardware",  dictGet(d.nodeinfo, ["hardware", "model"]))
++
++    if (typeof d.nodeinfo.wireless !== "undefined") {
++    if (d.nodeinfo.wireless)
++      attributeEntry(attributes, "Kanal 2,4 GHz",  dictGet(d.nodeinfo, ["wireless", "chan2"]))
++
++    if (d.nodeinfo.wireless)
++      attributeEntry(attributes, "Kanal 5 GHz",  dictGet(d.nodeinfo, ["wireless", "chan5"]))
++
++    if (d.nodeinfo.wireless)
++      attributeEntry(attributes, "Airtime 2,4",  showAIRTIME2(d))
++
++    if (d.nodeinfo.wireless)
++      attributeEntry(attributes, "Airtime 5",  showAIRTIME5(d))
++    }
++
+     attributeEntry(attributes, "Firmware", showFirmware(d))
+     attributeEntry(attributes, "Autom. Updates", showAutoupdate(d))
+     attributeEntry(attributes, "Community", showSite(d, config))
