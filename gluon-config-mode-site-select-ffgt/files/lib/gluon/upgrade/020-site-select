@@ -51,6 +51,9 @@ if not fs.access("/tmp/site-upgrade.lock") then
     end
     os.execute(string.format("/sbin/uci set gluon-node-info.@location[0].siteselect=%c%s%c 2>/dev/null", 39, newcommunity, 39))
     os.execute(string.format("/sbin/uci commit gluon-node-info 2>/dev/null"))
+    os.execute('cat /dev/null > /etc/config/fastd')
+    os.execute('/lib/gluon/site-upgrade')
+    os.execute('/etc/init.d/fastd restart')
   else
     --
     -- Case c) above
@@ -63,7 +66,9 @@ if not fs.access("/tmp/site-upgrade.lock") then
       local srcfile=string.gsub(sys.exec(cmdline), "\n", "")
       os.execute(string.format("logger src=%s com=%s", srcfile, newcommunity))
       os.execute(string.format("/bin/cp %s /lib/gluon/site.conf", srcfile))
-      os.execute('sh "/lib/gluon/site-upgrade"')
+      os.execute('cat /dev/null > /etc/config/fastd')
+      os.execute('/lib/gluon/site-upgrade')
+      os.execute('/etc/init.d/fastd restart')
     end
   end
 
@@ -95,7 +100,9 @@ if not fs.access("/tmp/site-upgrade.lock") then
     srcfile=string.gsub(sys.exec(cmdline), "\n", "")
     os.execute(string.format("logger src=%s com=%s", srcfile, newcommunity))
     os.execute(string.format("/bin/cp %s /lib/gluon/site.conf", srcfile))
-    os.execute('sh "/lib/gluon/site-upgrade"')
+    os.execute('cat /dev/null > /etc/config/fastd')
+    os.execute('/lib/gluon/site-upgrade')
+    os.execute('/etc/init.d/fastd restart')
   end
 
   os.execute('/bin/rm -f /tmp/site-upgrade.lock')
