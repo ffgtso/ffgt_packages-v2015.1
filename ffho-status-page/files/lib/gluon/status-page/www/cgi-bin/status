@@ -228,6 +228,11 @@ end
 
 io.write("</pre>")
 
+io.write("<h2>WiFi status</h2>")
+io.write("<pre>")
+io.write(util.exec("iwinfo"))
+io.write("</pre>")
+
 io.write("<script>")
 for _, ifname in ipairs(interfaces) do
   local macs = neighbours(ifname)
