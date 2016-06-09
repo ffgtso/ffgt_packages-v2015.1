@@ -10,4 +10,4 @@ uci batch <<-EOF
 	set uhttpd.main.home=/lib/gluon/status-page/www
 
 	commit uhttpd
-EOF
+EOF 2>/dev/null
