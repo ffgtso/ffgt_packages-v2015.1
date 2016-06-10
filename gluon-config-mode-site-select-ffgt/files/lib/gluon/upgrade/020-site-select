@@ -65,7 +65,7 @@ if not fs.access("/tmp/site-upgrade.lock") then
     local srcfile=string.gsub(sys.exec(cmdline), "\n", "")
     os.execute(string.format("logger src=%s com=%s", srcfile, newcommunity))
     os.execute(string.format("/bin/cp %s /lib/gluon/site.conf", srcfile))
-    os.execute('cat /dev/null > /etc/config/fastd')
+    os.execute('/lib/gluon/upgrade/400-mesh-vpn-fastd')
     os.execute('/lib/gluon/site-upgrade')
     os.execute('/etc/init.d/fastd restart')
   end
@@ -98,7 +98,7 @@ if not fs.access("/tmp/site-upgrade.lock") then
     srcfile=string.gsub(sys.exec(cmdline), "\n", "")
     os.execute(string.format("logger src=%s com=%s", srcfile, newcommunity))
     os.execute(string.format("/bin/cp %s /lib/gluon/site.conf", srcfile))
-    os.execute('cat /dev/null > /etc/config/fastd')
+    os.execute('/lib/gluon/upgrade/400-mesh-vpn-fastd')
     os.execute('/lib/gluon/site-upgrade')
     os.execute('/etc/init.d/fastd restart')
   end
