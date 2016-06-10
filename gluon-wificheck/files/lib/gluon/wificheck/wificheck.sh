@@ -11,6 +11,16 @@ else
   MESHIF=mesh_radio0
 fi
 
+# Only check 2.4 GHz interfaces. FIXME: his needs review for v2016.x
+interfaces= "`iw dev | egrep 'type IBSS|type mesh' -B 5 | grep Interface | cut -d' ' -f2`"
+for i in ${interfaces}
+do
+  tmpif="`iw dev $i info | awk '/^Interface/ {intf=$2; intf=sprintf("%s_radio%s", substr(intf, 1, length(intf)-1), substr(intf, length(intf), 1));} /channel/ {GHz=substr($3, 2, 1);} END {if(GHz==2) print intf;}'`"
+  if [ "X${tmpif}" != "X" ]; then
+    MESHIF=${tmpif}
+  fi
+done
+
 export GLUONV MESHIF
 
 mname=$(uci get wireless.$MESHIF.ifname)
@@ -26,7 +36,7 @@ if [ -z "$mname" ] ; then
   mesh=$(batctl o|grep $mname|cut -d")"  -f 2|cut -d" " -f 2|grep [.?.?:.?.?:.*]|sort|uniq|wc -l)
   logger -s -t "gluon-wificheck" -p 5 "ibss-bat-neighbours: $mesh wifiadhocs-neighbours: $wmesh wifimesh-neighbours: $neighbours"
   if [ ! -f /tmp/noisland ] ; then
-    if [ "$mesh" -gt 1 ] ; then #minimum 2 neighbors
+    if [ "$mesh" -gt 1 ] ; then # minimum 2 neighbors
       echo 1>/tmp/noisland
     fi
    else
