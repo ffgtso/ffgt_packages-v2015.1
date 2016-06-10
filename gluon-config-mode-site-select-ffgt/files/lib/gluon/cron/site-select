@@ -1,1 +1,1 @@
-*/5 * * * * /etc/init.d/site-select start
+5,35 * * * * /etc/init.d/site-select start

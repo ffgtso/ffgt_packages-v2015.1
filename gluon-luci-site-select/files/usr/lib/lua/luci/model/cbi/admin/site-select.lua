@@ -66,10 +66,10 @@ function f.handle(self, state, data)
       uci:set("gluon-node-info", sname, "siteselect", data.community)
       uci:save("gluon-node-info")
       uci:commit("gluon-node-info")
-      -- Copy the proper according to loc site.conf in place.
-      os.execute("logger 'Updating system-wide site.conf'")
+      -- Copy the proper site.conf in place.
+      os.execute("logger 'Configmode: Updating system-wide site.conf'")
       local srcfile=uci:get("siteselect", data.community, "path")
-      os.execute(string.format("logger 'src=%s com=%s'", srcfile, data.community))
+      os.execute(string.format("logger 'Using %s for site_select %s'", srcfile, data.community))
       os.execute(string.format("/bin/cp %s /lib/gluon/site.conf", srcfile))
       os.execute('/lib/gluon/site-upgrade &')
     end

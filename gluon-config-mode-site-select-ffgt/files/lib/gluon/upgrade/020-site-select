@@ -11,26 +11,22 @@ local newcommunity
 local cmdline
 local srcfile
 
--- 2016-06-04: Reworked, since most sites these days do have enforced coordinates.
+-- 2016-06-10: Reworked.
 --
--- a) check for siteselect field
---    - that's where we store the site.conf selection
---    - locode is updated by rgeo.sh/senddata.sh, and used, independently
--- b) Only if missing, try to geolocate, putting locode (or "zzz") into siteselect
--- c) Else, if site.site_selectcode != siteselect, copy siteselect site.conf to /lib/gluon
---    - Use case: siteselect was changed manually
-
--- Caveat: Firmware comes with a default site.conf, from now on with "site_selectcode = 'demo'".
--- Since 2016-06-09, 0.7.5~64, therefore site.conf is preserved across sysupgrades. Therefore, this
--- code mainly has to verify that the proper version from /lib/gluon/site-select/ is pushed to
--- /lib/gluon/site.conf according to siteselect.
+-- gluon.site_config now does select the proper site.conf without
+-- the need to copy stuff around. This solves the race condition
+-- we had before, where fastd data was build from /lib/gluon/site.conf
+-- instead the proper one (copy happened too late, for whatever reason).
+--
+-- We now only make sure site_select IS set, and copy the proper one
+-- to /lib/gluon/site.conf, just in case.
 
 if not fs.access("/tmp/site-upgrade.lock") then
   os.execute('/bin/touch /tmp/site-upgrade.lock')
   newcommunity=c:get_first("gluon-node-info", "location", "siteselect")
   if not newcommunity then
     --
-    -- Case b) above
+    -- No site_select / location settings yet?!
     --
     os.execute("logger 'Upgrading from legacy FW.'")
     -- Upgrade from non-site-select firmware: try geolocate if needed, try rgeo, use zzz as last resort.
@@ -53,55 +49,17 @@ if not fs.access("/tmp/site-upgrade.lock") then
     os.execute(string.format("/sbin/uci commit gluon-node-info 2>/dev/null"))
   end
 
-  if newcommunity ~= site.site_selectcode then
-    --
-    -- Case c) above: selected sitecode != what is installed as site.conf
-    --
-    -- Copy the proper new site.conf of the new community in place.
-    -- 2016-06-04: Do *not* do stuff based on locode here!
-    --
-    os.execute("logger 'Updating system-wide site.conf'")
-    local cmdline=string.format('/sbin/uci get siteselect.%s.path', newcommunity)
-    local srcfile=string.gsub(sys.exec(cmdline), "\n", "")
-    os.execute(string.format("logger src=%s com=%s", srcfile, newcommunity))
-    os.execute(string.format("/bin/cp %s /lib/gluon/site.conf", srcfile))
-    os.execute('/lib/gluon/upgrade/400-mesh-vpn-fastd')
-    os.execute('/lib/gluon/site-upgrade')
-    os.execute('/etc/init.d/fastd restart')
-  end
+  -- If this didn't fixed it, as we might not have IP connectivity yet, leave it to the site-select cron job.
 
-  local locode=string.gsub(sys.exec("uci get gluon-node-info.@location[0].locode 2>/dev/null"), "\n", "") or ''
-  if string.len(locode) == 0 then
-    os.execute("logger 'Upgrading from legacy FW, second try.'")
-    -- Upgrade from non-site-select firmware: try geolocate if needed, try rgeo, use zzz as last resort.
-    lat = tonumber(sys.exec("uci get gluon-node-info.@location[0].latitude 2>/dev/null")) or 0
-    lon = tonumber(sys.exec("uci get gluon-node-info.@location[0].longitude 2>/dev/null")) or 0
-    if ((lat == 0) or (lat == 51)) and ((lon == 0) or (lon == 9)) then
-      os.execute("logger 'Forcing gelococation due to missing coordinates'")
-      os.execute('/bin/rm -f /tmp/run/wifi-data-sent')
-      os.execute('/lib/gluon/ffgt-geolocate/senddata.sh force')
-    end
-    if fs.access("/lib/gluon/ffgt-geolocate/rgeo.sh") then
-      os.execute("logger 'Doing reverse geolocation.'")
-      os.execute('/lib/gluon/ffgt-geolocate/rgeo.sh')
-    end
-    newcommunity = string.gsub(sys.exec("uci get gluon-node-info.@location[0].locode 2>/dev/null"), "\n", "") or ''
-    if string.len(newcommunity) == 0 then
-      newcommunity = "zzz"
-    end
-    os.execute(string.format("/sbin/uci set gluon-node-info.@location[0].siteselect=%c%s%c 2>/dev/null", 39, newcommunity, 39))
-    os.execute(string.format("/sbin/uci commit gluon-node-info 2>/dev/null"))
-
-    -- Copy the proper site.conf, according to location, in place.
-    os.execute("logger 'Updating system-wide site.conf'")
-    cmdline=string.format('/sbin/uci get siteselect.%s.path', newcommunity)
-    srcfile=string.gsub(sys.exec(cmdline), "\n", "")
-    os.execute(string.format("logger src=%s com=%s", srcfile, newcommunity))
-    os.execute(string.format("/bin/cp %s /lib/gluon/site.conf", srcfile))
-    os.execute('/lib/gluon/upgrade/400-mesh-vpn-fastd')
-    os.execute('/lib/gluon/site-upgrade')
-    os.execute('/etc/init.d/fastd restart')
-  end
+  os.execute("logger 'Updating system-wide site.conf on sysupgrade'")
+  cmdline=string.format('/sbin/uci get siteselect.%s.path', newcommunity)
+  srcfile=string.gsub(sys.exec(cmdline), "\n", "")
+  os.execute(string.format("logger 'Using %s for site_select %s'", srcfile, newcommunity))
+  os.execute(string.format("/bin/cp %s /lib/gluon/site.conf", srcfile))
+  -- Should not be necessary anymore, as per gluon-site_config, the site-select one was used already.
+  -- os.execute('/lib/gluon/upgrade/400-mesh-vpn-fastd')
+  -- os.execute('/lib/gluon/site-upgrade')
+  -- os.execute('/etc/init.d/fastd restart')
 
   os.execute('/bin/rm -f /tmp/site-upgrade.lock')
 end

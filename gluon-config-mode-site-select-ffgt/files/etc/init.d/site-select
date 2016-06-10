@@ -2,49 +2,70 @@
 
 START=99
 
-if [ -e /tmp/needs_rgeo ]; then
-  /lib/gluon/ffgt-geolocate/rgeo.sh
+curcommunity=`/usr/bin/lua -e "local site=require 'gluon.site_config' local curcommunity=site.site_selectcode or 'none' print (curcommunity)"`
+
+curlat="`/sbin/uci get gluon-node-info.@location[0].longitude 2>/dev/null`"
+RClat=$?
+locode="`/sbin/uci get gluon-node-info.@location[0].locode 2>/dev/null`"
+RCloc=$?
+if [ $RClat -eq 1 -o $RCloc -eq 1 ]; then
+  logger '$0: Forcing gelococation due to missing coordinates/locode'
+  /lib/gluon/ffgt-geolocate/senddata.sh --force
   /bin/rm -f /tmp/needs_rgeo
+else
+  if [ -e /tmp/needs_rgeo ]; then
+    /lib/gluon/ffgt-geolocate/rgeo.sh
+    /bin/rm -f /tmp/needs_rgeo
+  fi
+fi
+
+uptime=`/usr/bin/awk </proc/uptime 'BEGIN{uptime=0;} {uptime=sprintf("%d", $1);} END{print uptime;}'`
+if [ $uptime -gt 7200 ]; then
+  rebootloopprevention="`/sbin/uci get gluon-node-info.@location[0].rebootloopprevention 2>/dev/null`"
+  if [ "X${rebootloopprevention}" != "X" ]; then
+    /sbin/uci delete gluon-node-info.@location[0].rebootloopprevention
+    /sbin/uci commit
+  fi
 fi
 
 newcommunity="`/sbin/uci get gluon-node-info.@location[0].siteselect 2>/dev/null`"
-curcommunity=`/usr/bin/lua -e "local site=require 'gluon.site_config' local curcommunity=site.site_selectcode or 'none' print (curcommunity)"`
 locode="`/sbin/uci get gluon-node-info.@location[0].locode 2>/dev/null`"
 
 if [ "X${locode}" != "X" -a "X${newcommunity}" != "X" -a "X${curcommunity}" != "X" ]; then
   # All set ... Consistency check.
-  if [ "${newcommunity}" == "${curcommunity}" -a "${newcommunity}" == "${locode}" ]; then
-    # newcommunity == currcommunity == locode, excellent! Stop the cron job ...
+  if [ "${newcommunity}" == "${curcommunity}" -a "X${locode}" != "X" ]; then
+    # newcommunity == currcommunity, non-empty locode, excellent! Stop the cron job ...
     /bin/sed -i -e 's%^.*$%#&%g' /lib/gluon/cron/site-select
+    rebootloopprevention="`/sbin/uci get gluon-node-info.@location[0].rebootloopprevention 2>/dev/null`"
+    if [ "X${rebootloopprevention}" != "X" ]; then
+      /sbin/uci delete gluon-node-info.@location[0].rebootloopprevention
+      /sbin/uci commit
+    fi
   fi
 fi
 
 if [ "X${locode}" == "X" ]; then
   # Missing. Try to fix via rgeo call on next run via cron
   touch /tmp/needs_rgeo
-elif [ "${newcommunity}" != "${locode}" ]; then
-  # Mismatch. Locode prevails, thus we need to reconfigure.
-  newcommunity="${locode}"
 fi
 
 if [ "X${newcommunity}" == "X" ]; then
-  # siteselect isn't there, shouldn't happen. Check for locode.
-  if [ "X${locode}" != "X" ]; then
-     newcommunity="${locode}"
-  fi
+  # siteselect isn't there, shouldn't happen. Bail out for now.
+  logger 'Whow, siteselect not set? This should never happen ...'
+  exit 0
 fi
 
-if [ "X${newcommunity}" != "X" -a "${newcommunity}" != "${curcommunity}" ]; then
+if [ "${newcommunity}" != "${curcommunity}" ]; then
+  # Installed site.conf does not align with (new) siteselect code.
+  # Just for completeness, sync.
   srcfile="`/sbin/uci get siteselect.${newcommunity}.path`"
   /bin/cp ${srcfile} /lib/gluon/site.conf
-  /sbin/uci set gluon-node-info.@location[0].siteselect="${newcommunity}"
-  /sbin/uci commit
   /lib/gluon/site-upgrade
   rebootloopprevention="`/sbin/uci get gluon-node-info.@location[0].rebootloopprevention 2>/dev/null`"
   if [ "X${rebootloopprevention}" == "X" ]; then
     /sbin/uci set gluon-node-info.@location[0].rebootloopprevention='1'
     /sbin/uci commit
-    # Reboot into new config in 60 seconds ...
-    ((sleep 60 ; reboot)&) #))
+    # Reboot into new config in 10 seconds ...
+    ((sleep 10 ; reboot -f)&) #))
   fi
 fi
