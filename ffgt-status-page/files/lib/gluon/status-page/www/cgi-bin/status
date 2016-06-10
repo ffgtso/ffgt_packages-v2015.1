@@ -229,8 +229,10 @@ end
 io.write("</pre>")
 
 io.write("<h2>WiFi status</h2>")
+io.write("(without private WLAN, if enabled)")
 io.write("<pre>")
-io.write(util.exec("iwinfo"))
+-- io.write(util.exec("iwinfo"))
+io.write(util.exec("for i in `iwinfo | awk '/^[[:space:]]/ {next;} /ESSID/ {print $1;}' | grep -v wlan.-` ; do iwinfo $i info ; done"))
 io.write("</pre>")
 
 io.write("<script>")
