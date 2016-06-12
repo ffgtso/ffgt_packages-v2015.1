@@ -21,22 +21,27 @@ local longitude = uci:get_first('gluon-node-info', 'location', 'longitude')
 local share_location = uci:get_first('gluon-node-info', 'location', 'share_location')
 local location = ""
 local wan_mac = uci:get('network', 'wan', 'macaddr')
-local wan_if = util.trim(util.exec("(cd /sys/class/net/br-wan/brif/ ; for i in * ; do echo $i ; done) | awk '/uplink/ {uplink=$1;} /eth/ {ether=$1;} END {if(uplink!=\"\") print uplink; else print ether;}'"))
+local wan_if = util.trim(util.exec("if [ -e /sys/class/net/br-wan ]; then (cd /sys/class/net/br-wan/brif/ ; for i in * ; do echo $i ; done) | awk '/uplink/ {uplink=$1;} /eth/ {ether=$1;} END {if(uplink!=\"\") print uplink; else print ether;}' ; fi"))
 local wan_if_link = ""
 local radios = {}
 
-if wan_if:find("uplink") then
-  wan_if_link = util.trim(util.exec("/lib/gluon/status-page/parse_uplinkX.sh " .. wan_if))
-  if wan_if_link == '' then
-    wan_if_link = "n/a"
+if wan_if ~= "" then
+  if wan_if:find("uplink") then
+    wan_if_link = util.trim(util.exec("/lib/gluon/status-page/parse_uplinkX.sh " .. wan_if))
+    if wan_if_link == '' then
+      wan_if_link = "n/a"
+    end
+  else
+    wan_if_link = util.trim(fs.readfile("/sys/class/net/" .. wan_if .."/carrier"))
+    if wan_if_link == "1" then
+      wan_if_link = "link up"
+    else
+      wan_if_link = "link down"
+    end
   end
 else
-  wan_if_link = util.trim(fs.readfile("/sys/class/net/" .. wan_if .."/carrier"))
-  if wan_if_link == "1" then
-    wan_if_link = "link up"
-  else
-    wan_if_link = "link down"
-  end
+  wan_if = "n/a"
+  wan_if_link = "n/a"
 end
 
 if latitude and longitude then
