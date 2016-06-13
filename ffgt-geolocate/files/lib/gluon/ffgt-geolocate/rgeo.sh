@@ -5,26 +5,12 @@ if [ "$isconfigured" != "1" ]; then
  isconfigured=0
 fi
 
-# Do a reverse geocoding with current lat/lon settings
-# Bloody v4/v6 issues ... From an IPv4-only upstream, the preferred IPv6 AAAA record results in connection errors.
-USEIPV4=1
-USEIPV6=0
-/bin/ping -q -c 3 setup.ipv4.4830.org >/dev/null 2>&1
-if [ $? -ne 0 ]; then
- USEIPV4=0
- /bin/ping -q -c 3 setup.ipv6.4830.org >/dev/null 2>&1
- if [ $? -eq 0 ]; then
-  USEIPV6=1
- fi
+IPVXPREFIX="`/lib/gluon/ffgt-geolocate/ipv5.sh`"
+if [ "Y$IPVXPREFIX" == "Y" -o "$IPVXPREFIX" == "ipv5." ]; then
+ logger "$0: IPv5 not implemented."
+ exit 1
 fi
-IPVXPREFIX="ipv6."
-if [ $USEIPV4 -eq 1 ]; then
- IPVXPREFIX="ipv4."
-fi
-if [ $USEIPV4 -eq 0 -a $USEIPV6 -eq 0 ]; then
-  echo "$0: IPv5 not implemented."
-  exit 1
-fi
+
 mac=`/sbin/uci get network.bat0.macaddr`
 curlat="`/sbin/uci get gluon-node-info.@location[0].latitude 2>/dev/null`"
 curlon="`/sbin/uci get gluon-node-info.@location[0].longitude 2>/dev/null`"

@@ -34,28 +34,13 @@ if [ ${mobile} -eq 1 -a ${MODULO} -eq 0 ]; then
  runnow=1
 fi
 
-if [ ${runnow} -eq 1 ]; then
-# Bloody v4/v6 issues ... From an IPv4-only upstream, the preferred IPv6 AAAA record results in connection errors.
- USEIPV4=1
- USEIPV6=0
- /bin/ping -q -c 3 setup.ipv4.4830.org >/dev/null 2>&1
- if [ $? -ne 0 ]; then
-  USEIPV4=0
-  /bin/ping -q -c 3 setup.ipv6.4830.org >/dev/null 2>&1
-  if [ $? -eq 0 ]; then
-   USEIPV6=1
-  fi
- fi
- if [ $USEIPV4 -eq 1 ]; then
-  IPVXPREFIX="ipv4."
- else
-  IPVXPREFIX="ipv6."
- fi
- # In theory, both of aboves checks could fail, e. g. on an unconnected node.
- # We might want to catch this case sometime ... (FIXME)
- # It might even be useful to just use an IPv6 ULA address for this (but we
- # actually want to get rid of ULA, so ...)
+IPVXPREFIX="`/lib/gluon/ffgt-geolocate/ipv5.sh`"
+if [ "Y$IPVXPREFIX" == "Y" -o "$IPVXPREFIX" == "ipv5." ]; then
+ logger "$0: IPv5 not implemented."
+ exit 1
+fi
 
+if [ ${runnow} -eq 1 ]; then
  mac=`/sbin/uci get network.bat0.macaddr`
  # Fuuuu... iw might not be there. If so, let's fake it.
  if [ -e /usr/sbin/iw ]; then
