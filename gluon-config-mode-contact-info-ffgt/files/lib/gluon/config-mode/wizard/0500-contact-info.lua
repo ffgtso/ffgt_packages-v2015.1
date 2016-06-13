@@ -17,15 +17,21 @@ function M.section(form)
   if not au_enabled then
     local s = form:section(cbi.SimpleSection, nil,
       [[<b>Achtung:</b> Dieser Knoten aktualisiert seine Firmware
-      <b>nicht automatisch</b>. Die Angabe einer <b>g&uuml;ltigen</b> eMail-Adresse
+      <b>nicht</b> automatisch. Die Angabe einer <b>g&uuml;ltigen</b> eMail-Adresse
       ist daher obligatorisch; alternativ reaktiviere bitte das automatische
       Update im <i>Expert Mode</i>.]])
   end
   if not fs.access("/tmp/is_online") then
     local s = form:section(cbi.SimpleSection, nil, [[<b>Keine Internetverbindung!</b>
        Die eMail-Adresse kann daher nicht verifiziert werden; entweder mu&szlig; die
-       Verbindung zum Internet hergestellt oder aber der Autoupdating-Mechanismus
+       Verbindung zum Internet hergestellt oder aber der Autoupdate-Mechanismus
        reaktiviert werden (im  <i>Expert Mode</i>). Anderenfalls ist der Abschlu&szlig;
+       der Konfiguration nicht m&ouml;glich.]])
+  end
+  if fs.access("/tmp/invalid_email") then
+    local s = form:section(cbi.SimpleSection, nil, [[<b>EMail-Pr&uuml;fung fehlgeschlagen!</b>
+       Die eingegebene eMail-Adresse scheint nicht g&uuml;ltig zu sein, bitte eine g&uuml;ltige
+       eintragen oder den Autoupdate-Mechanismus reaktivieren. Anderenfalls ist der Abschlu&szlig;
        der Konfiguration nicht m&ouml;glich.]])
   end
 
@@ -39,8 +45,20 @@ end
 
 function M.handle(data)
   if data._contact ~= nil then
-    uci:set("gluon-node-info", uci:get_first("gluon-node-info", "owner"), "contact", data._contact)
-    uci:save("gluon-node-info")
+    if not fs.access("/tmp/is_online") then
+      luci.http.redirect(luci.dispatcher.build_url("gluon-config-mode/wizard"))
+    else
+      uci:set("gluon-node-info", uci:get_first("gluon-node-info", "owner"), "contact", data._contact)
+      uci:save("gluon-node-info")
+      local valid=os.execute("/lib/gluon/ffgt-email-verification/verify-email.sh \"" .. data._contact .. "\"")
+      if valid ~= 0 then
+        os.execute("touch /tmp/invalid_email")
+        luci.http.redirect(luci.dispatcher.build_url("gluon-config-mode/wizard"))
+      else
+        os.execute("/bin/rm /tmp/invalid_email")
+      end
+    end
+
     uci:commit("gluon-node-info")
   else
     if not au_enabled then
