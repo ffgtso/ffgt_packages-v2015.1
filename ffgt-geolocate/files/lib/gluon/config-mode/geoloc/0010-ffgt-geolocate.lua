@@ -26,8 +26,7 @@ function M.section(form)
     local s = form:section(cbi.SimpleSection, nil,
     [[<b>Die Adressaufl&ouml;sung ist fehlgeschlagen.</b> Bitte &uuml;berpr&uuml;fe Deine
     Koordinaten, sie konnten keinem Ort zugeordnet werden. Bitte beachte, da&szlig; Dein
-    Knoten Internet-Zugang haben mu&szlig;,
-    damit die Karte angezeigt und die Daten validiert werden k&ouml;nnen.]])
+    Knoten Internet-Zugang haben mu&szlig;, damit die Daten validiert werden k&ouml;nnen.]])
   else
     local addr = uci:get_first("gluon-node-info", 'location', "addr") or "FEHLER_ADDR"
     local city = uci:get_first("gluon-node-info", 'location', "city") or "FEHLER_ORT"
