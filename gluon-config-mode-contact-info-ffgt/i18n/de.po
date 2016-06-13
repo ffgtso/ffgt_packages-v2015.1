@@ -23,5 +23,5 @@ msgstr ""
 "dieser Hinweis auch öffentlich im Internet, bei entsprechender Freigabe "
 "zusammen mit den Koordinaten Deines Knotens, einsehbar sein wird."
 
-msgid "e.g. E-mail or phone number"
-msgstr "z.B. E-Mail oder Telefonnummer"
+msgid "E-mail"
+msgstr "eMail"

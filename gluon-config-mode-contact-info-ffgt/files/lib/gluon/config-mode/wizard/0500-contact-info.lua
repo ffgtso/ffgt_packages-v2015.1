@@ -1,6 +1,7 @@
 local cbi = require "luci.cbi"
 local i18n = require "luci.i18n"
 local uci = luci.model.uci.cursor()
+local fs = require "nixio.fs"
 
 local M = {}
 
@@ -13,6 +14,10 @@ function M.section(form)
       .. 'on the internet together with your node\'s coordinates.'
     )
   )
+
+  if not fs.access("/tmp/is_online") then
+    os.execute('/lib/gluon/config-mode/check4online.sh')
+  end
 
   if not au_enabled then
     local s = form:section(cbi.SimpleSection, nil,
@@ -39,19 +44,29 @@ function M.section(form)
   o.default = uci:get_first("gluon-node-info", "owner", "contact", "")
   -- o.rmempty = true
   o.datatype = "string"
-  o.description = i18n.translate("e.g. E-mail or phone number")
+  o.description = i18n.translate("E-mail")
   o.maxlen = 140
 end
 
 function M.handle(data)
+  function url_encode(str)
+    if (str) then
+      str = string.gsub (str, "\n", "\r\n")
+      str = string.gsub (str, "([^%w %-%_%.%~])",
+        function (c) return string.format ("%%%02X", string.byte(c)) end)
+      str = string.gsub (str, " ", "+")
+    end
+    return str
+  end
+
   if data._contact ~= nil then
     if not fs.access("/tmp/is_online") then
       luci.http.redirect(luci.dispatcher.build_url("gluon-config-mode/wizard"))
     else
       uci:set("gluon-node-info", uci:get_first("gluon-node-info", "owner"), "contact", data._contact)
       uci:save("gluon-node-info")
-      local valid=os.execute("/lib/gluon/ffgt-email-verification/verify-email.sh \"" .. data._contact .. "\"")
-      if valid ~= 0 then
+      local isvalid=os.execute(string.format("/lib/gluon/ffgt-email-verification/verify-email.sh \"%s\" >/dev/null", url_encode(data._contact)))
+      if isvalid ~= 0 then
         os.execute("touch /tmp/invalid_email")
         luci.http.redirect(luci.dispatcher.build_url("gluon-config-mode/wizard"))
       else

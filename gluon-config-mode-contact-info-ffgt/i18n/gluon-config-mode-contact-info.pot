@@ -10,5 +10,5 @@ msgid ""
 "the internet together with your node's coordinates."
 msgstr ""
 
-msgid "e.g. E-mail or phone number"
+msgid "E-mail"
 msgstr ""

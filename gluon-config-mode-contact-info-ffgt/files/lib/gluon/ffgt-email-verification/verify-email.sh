@@ -2,10 +2,11 @@
 
 # Script to basically verify an email address; exits 0 on valid, 1 else.
 # Supposed to be used in Lua scripts like local valid=os.execute("...")
+# As stdout output would prevent luci.http.redirect(), we only use logger
+# to log to syslog (check with logread).
 
 if [ $# -ne 1 ]; then
  logger "Usage: $0 email"
- echo "Usage"
  exit 1
 fi
 
@@ -16,7 +17,6 @@ VALID=0
 
 if [ "Y$IPVXPREFIX" == "Y" -o "$IPVXPREFIX" == "ipv5." ]; then
  logger "$0: IPv5 not implemented."
- echo "IPv5"
  exit 1
 fi
 
@@ -30,9 +30,9 @@ if [ -e ${DATAFILE} ]; then
 fi
 
 if [ $VALID -eq 1 ]; then
- echo "Valid"
+ logger "Valid email: ${EMAIL}"
  exit 0
 else
- echo "Invalid"
+ logger "Invalid email: ${EMAIL}"
  exit 1
 fi
