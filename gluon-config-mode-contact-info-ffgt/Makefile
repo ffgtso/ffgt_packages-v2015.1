@@ -1,6 +1,6 @@
 include $(TOPDIR)/rules.mk
 
-PKG_NAME:=gluon-config-mode-contact-info
+PKG_NAME:=gluon-config-mode-contact-info-ffgt
 PKG_VERSION:=1
 
 PKG_BUILD_DIR := $(BUILD_DIR)/$(PKG_NAME)
@@ -10,7 +10,7 @@ include $(GLUONDIR)/include/package.mk
 PKG_CONFIG_DEPENDS += $(GLUON_I18N_CONFIG)
 
 
-define Package/gluon-config-mode-contact-info
+define Package/gluon-config-mode-contact-info-ffgt
   SECTION:=gluon
   CATEGORY:=Gluon
   TITLE:=Set a custom string that will be distributed in the mesh.
@@ -25,12 +25,12 @@ define Build/Configure
 endef
 
 define Build/Compile
-	$(call GluonBuildI18N,gluon-config-mode-contact-info,i18n)
+	$(call GluonBuildI18N,gluon-config-mode-contact-info-ffgt,i18n)
 endef
 
-define Package/gluon-config-mode-contact-info/install
+define Package/gluon-config-mode-contact-info-ffgt/install
 	$(CP) ./files/* $(1)/
-	$(call GluonInstallI18N,gluon-config-mode-contact-info,$(1))
+	$(call GluonInstallI18N,gluon-config-mode-contact-info-ffgt,$(1))
 endef
 
-$(eval $(call BuildPackage,gluon-config-mode-contact-info))
+$(eval $(call BuildPackage,gluon-config-mode-contact-info-ffgt))
