@@ -10,11 +10,11 @@ function sysctl_set_if_lower(_key, _value)
 	end
 end
 
-sysctl_set_if_lower('net.ipv4.neigh.default.gc_thresh1', 192)
-sysctl_set_if_lower('net.ipv4.neigh.default.gc_thresh2', 640)
-sysctl_set_if_lower('net.ipv4.neigh.default.gc_thresh3', 1280)
+sysctl_set_if_lower('net.ipv4.neigh.default.gc_thresh1', 512)
+sysctl_set_if_lower('net.ipv4.neigh.default.gc_thresh2', 1024)
+sysctl_set_if_lower('net.ipv4.neigh.default.gc_thresh3', 2048)
 sysctl_set_if_lower('net.ipv6.neigh.default.gc_thresh1', 512)
 sysctl_set_if_lower('net.ipv6.neigh.default.gc_thresh2', 1024)
-sysctl_set_if_lower('net.ipv6.neigh.default.gc_thresh3', 1536)
+sysctl_set_if_lower('net.ipv6.neigh.default.gc_thresh3', 2048)
 
 os.execute('sync; sysctl -qp')
