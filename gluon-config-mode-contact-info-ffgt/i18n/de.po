@@ -19,7 +19,7 @@ msgid ""
 "the internet together with your node's coordinates."
 msgstr ""
 "Hier kannst Du einen <em>öffentlichen</em> Hinweis hinterlegen, um anderen "
-"zu ermöglichen, Kontakt mit Dir aufzunehmen. Bitte beachte, dass "
+"zu ermöglichen, Kontakt mit Dir aufzunehmen. Bitte beachte, daß "
 "dieser Hinweis auch öffentlich im Internet, bei entsprechender Freigabe "
 "zusammen mit den Koordinaten Deines Knotens, einsehbar sein wird."
 
