@@ -98,6 +98,10 @@ function M.handle(data)
     uci:set("gluon-node-info", uci:get_first("gluon-node-info", "owner"), "infourl", data._infourl)
     uci:save("gluon-node-info")
     uci:commit("gluon-node-info")
+  else
+    uci:delete("gluon-node-info", uci:get_first("gluon-node-info", "owner"), "infourl")
+    uci:save("gluon-node-info")
+    uci:commit("gluon-node-info")
   end
 end
 
