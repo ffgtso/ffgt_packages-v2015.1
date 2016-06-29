@@ -25,3 +25,9 @@ msgstr ""
 
 msgid "E-mail"
 msgstr "eMail"
+
+msgid "Location URL"
+msgstr "Info-URL zum Aufsteller/Aufstellort"
+
+msgid "URL"
+msgstr "URL"

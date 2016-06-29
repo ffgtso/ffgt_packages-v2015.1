@@ -41,11 +41,21 @@ function M.section(form)
   end
 
   local o = s:option(cbi.Value, "_contact", i18n.translate("Contact info"))
-  o.default = uci:get_first("gluon-node-info", "owner", "contact", "")
+  o.default = uci:get_first("gluon-node-info", "infourl", "contact", "")
   -- o.rmempty = true
   o.datatype = "string"
   o.description = i18n.translate("E-mail")
   o.maxlen = 140
+
+  local s = form:section(cbi.SimpleSection, nil, [[Hier kann eine URL angegeben werden,
+     die auf den Aufsteller/Aufstellort hinweist. Diese URL wird auf der Knotenkarte
+     bei den Knotendaten &ouml;ffentlich einsehbar sein.]])
+  local o = s:option(cbi.Value, "_infourl", i18n.translate("Location URL"))
+  o.default = uci:get_first("gluon-node-info", "infourl", "infourl", "")
+  -- o.rmempty = true
+  o.datatype = "string"
+  o.description = i18n.translate("URL")
+  o.maxlen = 255
 end
 
 function M.handle(data)
@@ -63,7 +73,7 @@ function M.handle(data)
     if not fs.access("/tmp/is_online") then
       luci.http.redirect(luci.dispatcher.build_url("gluon-config-mode/wizard"))
     else
-      uci:set("gluon-node-info", uci:get_first("gluon-node-info", "owner"), "contact", data._contact)
+      uci:set("gluon-node-info", uci:get_first("gluon-node-info", "infourl"), "contact", data._contact)
       uci:save("gluon-node-info")
       local isvalid=os.execute(string.format("/lib/gluon/ffgt-email-verification/verify-email.sh \"%s\" >/dev/null", url_encode(data._contact)))
       if isvalid ~= 0 then
@@ -79,7 +89,13 @@ function M.handle(data)
     if not au_enabled then
       luci.http.redirect(luci.dispatcher.build_url("gluon-config-mode/wizard"))
     end
-    uci:delete("gluon-node-info", uci:get_first("gluon-node-info", "owner"), "contact")
+    uci:delete("gluon-node-info", uci:get_first("gluon-node-info", "infourl"), "contact")
+    uci:save("gluon-node-info")
+    uci:commit("gluon-node-info")
+  end
+
+  if data._infourl ~= nil then
+    uci:set("gluon-node-info", uci:get_first("gluon-node-info", "infourl"), "infourl", data._infourl)
     uci:save("gluon-node-info")
     uci:commit("gluon-node-info")
   end

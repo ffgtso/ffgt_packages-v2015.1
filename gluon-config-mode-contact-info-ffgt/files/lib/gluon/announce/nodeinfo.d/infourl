@@ -1,0 +1,4 @@
+local infourl = uci:get_first('gluon-node-info', 'owner', 'infourl', '')
+if infourl ~= '' then
+	return { infourl = infourl }
+end
