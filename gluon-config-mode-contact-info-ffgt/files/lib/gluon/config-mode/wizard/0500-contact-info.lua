@@ -48,8 +48,8 @@ function M.section(form)
   o.maxlen = 140
 
   local s = form:section(cbi.SimpleSection, nil, [[Hier kann eine URL angegeben werden,
-     die auf den Aufsteller/Aufstellort hinweist. Diese URL wird auf der Knotenkarte
-     bei den Knotendaten &ouml;ffentlich einsehbar sein.]])
+     die auf den Aufsteller/Aufstellort und sein Freifunk-Engagement hinweist.
+     Diese URL wird auf der Knotenkarte bei den Knotendaten &ouml;ffentlich einsehbar sein.]])
   local o = s:option(cbi.Value, "_infourl", i18n.translate("Location URL"))
   o.default = uci:get_first("gluon-node-info", "owner", "infourl", "")
   -- o.rmempty = true
