@@ -24,6 +24,9 @@ local wan_mac = uci:get('network', 'wan', 'macaddr')
 local wan_if = util.trim(util.exec("if [ -e /sys/class/net/br-wan ]; then (cd /sys/class/net/br-wan/brif/ ; for i in * ; do echo $i ; done) | awk '/uplink/ {uplink=$1;} /eth/ {ether=$1;} END {if(uplink!=\"\") print uplink; else print ether;}' ; fi"))
 local wan_if_link = ""
 local radios = {}
+local ntpoffset = ""
+
+ntpoffset = util.trim(util.exec("/lib/gluon/status-page/chk_ntp.sh"))
 
 if wan_if ~= "" then
   if wan_if:find("uplink") then
@@ -132,6 +135,8 @@ io.write("MAC (prim.): " .. escape_html(primary_mac) .. "\n")
 io.write("MAC (WAN):   " .. escape_html(wan_mac) .. "\n")
 io.write("WAN Interf.: " .. escape_html(wan_if) .. " (" .. escape_html(wan_if_link) .. ")\n")
 io.write("<!-- Contact:     " .. escape_html(contact) .. "\n -->")
+io.write("Systemdate:  " .. escape_html(util.trim(sys.exec("date"))) .. "\n")
+io.write("NTP Offset:  " .. escape_html(ntpoffset  .. "\n")
 io.write("Uptime:      " .. escape_html(util.trim(sys.exec("uptime | sed 's/^ \+//'"))) .. "\n")
 io.write("Autoupdater: " .. escape_html(autoupdater) .. "\n")
 io.write("Location:    " .. location .. "\n")
